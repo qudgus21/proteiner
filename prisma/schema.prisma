@@ -1,18 +1,79 @@
-
-// prisma/schema.prisma
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
-  url      =  env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
 model Product {
-  id        Int      @id @default(autoincrement())
-  name      String
-  price     Float
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                Int                     @id @default(autoincrement())
+  name              String
+  price             Int
+  pricePer100g      Int?
+  productUrl        String
+  affiliateUrl      String?
+  productType       ProductType             @relation("ProductTypeProducts", fields: [productTypeId], references: [id])
+  productTypeId     Int
+  site              ProductSite             @relation("ProductSiteProducts", fields: [siteId], references: [id])
+  siteId            Int
+  nutrition100g     ProductNutrition100g?   @relation("ProductToNutrition100g", fields: [nutrition100gId], references: [id])
+  nutrition100gId   Int?                    @unique
+  nutritionTotal    ProductNutritionTotal?  @relation("ProductToNutritionTotal", fields: [nutritionTotalId], references: [id])
+  nutritionTotalId  Int?                    @unique
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+
+  @@index([price])
+  @@index([pricePer100g])
+  @@index([productTypeId])
+  @@index([siteId])
+}
+
+model ProductNutrition100g {
+  id               Int       @id @default(autoincrement())
+  calories         Float
+  carbohydrates    Float
+  sugars           Float
+  protein          Float
+  fat              Float
+  saturatedFat     Float
+  transFat         Float
+  cholesterol      Float
+  sodium           Float
+
+  product          Product? @relation("ProductToNutrition100g")
+}
+
+model ProductNutritionTotal {
+  id               Int       @id @default(autoincrement())
+  calories         Float
+  carbohydrates    Float
+  sugars           Float
+  protein          Float
+  fat              Float
+  saturatedFat     Float
+  transFat         Float
+  cholesterol      Float
+  sodium           Float
+
+  product          Product? @relation("ProductToNutritionTotal")
+}
+
+model ProductType {
+  id         Int           @id @default(autoincrement())
+  name       String        @unique
+  parentId   Int?          @db.Integer
+  parent     ProductType?  @relation("ProductTypeHierarchy", fields: [parentId], references: [id])
+  children   ProductType[] @relation("ProductTypeHierarchy")
+  products   Product[]     @relation("ProductTypeProducts")
+
+  @@index([parentId])
+}
+
+model ProductSite {
+  id         Int    @id @default(autoincrement())
+  name       String @unique
+  products   Product[] @relation("ProductSiteProducts")
 }
