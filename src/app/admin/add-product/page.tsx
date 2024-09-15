@@ -1,4 +1,3 @@
-// src/app/admin/add-product/page.tsx
 "use client";
 
 import React, { useState } from "react";
