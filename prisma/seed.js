@@ -179,6 +179,7 @@ async function main() {
         siteId: coopang.id,
         nutrition100gId: nutrition100s[0].id,
         nutritionTotalId: nutritionTotals[0].id,
+        imageUrl: "https://example.com/product1-image.jpg",
       },
       {
         name: "Protein Powder",
@@ -190,6 +191,7 @@ async function main() {
         siteId: ranking.id,
         nutrition100gId: nutrition100s[1].id,
         nutritionTotalId: nutritionTotals[1].id,
+        imageUrl: "https://example.com/product1-image.jpg",
       },
       {
         name: "Protein Powder",
@@ -201,6 +203,7 @@ async function main() {
         siteId: meetry.id,
         nutrition100gId: nutrition100s[2].id,
         nutritionTotalId: nutritionTotals[2].id,
+        imageUrl: "https://example.com/product1-image.jpg",
       },
     ],
   });
