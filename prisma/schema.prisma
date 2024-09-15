@@ -8,20 +8,20 @@ datasource db {
 }
 
 model Product {
-  id                Int                     @id @default(autoincrement())
+  id                String                  @id @default(uuid())   // UUID 사용
   name              String
   price             Int
   pricePer100g      Int?
   productUrl        String
   affiliateUrl      String?
   productType       ProductType             @relation("ProductTypeProducts", fields: [productTypeId], references: [id])
-  productTypeId     Int
+  productTypeId     String                  // UUID 타입으로 변경
   site              ProductSite             @relation("ProductSiteProducts", fields: [siteId], references: [id])
-  siteId            Int
+  siteId            String                  // UUID 타입으로 변경
   nutrition100g     ProductNutrition100g?   @relation("ProductToNutrition100g", fields: [nutrition100gId], references: [id])
-  nutrition100gId   Int?                    @unique
+  nutrition100gId   String?                 @unique
   nutritionTotal    ProductNutritionTotal?  @relation("ProductToNutritionTotal", fields: [nutritionTotalId], references: [id])
-  nutritionTotalId  Int?                    @unique
+  nutritionTotalId  String?                 @unique
   createdAt         DateTime                @default(now())
   updatedAt         DateTime                @updatedAt
 
@@ -32,7 +32,7 @@ model Product {
 }
 
 model ProductNutrition100g {
-  id               Int       @id @default(autoincrement())
+  id               String    @id @default(uuid())  // UUID 사용
   calories         Float
   carbohydrates    Float
   sugars           Float
@@ -47,7 +47,7 @@ model ProductNutrition100g {
 }
 
 model ProductNutritionTotal {
-  id               Int       @id @default(autoincrement())
+  id               String    @id @default(uuid())  // UUID 사용
   calories         Float
   carbohydrates    Float
   sugars           Float
@@ -62,9 +62,9 @@ model ProductNutritionTotal {
 }
 
 model ProductType {
-  id         Int           @id @default(autoincrement())
-  name       String        @unique
-  parentId   Int?          @db.Integer
+  id         String        @id @default(uuid())  // UUID 사용
+  name       String
+  parentId   String?                            // UUID 타입으로 변경
   parent     ProductType?  @relation("ProductTypeHierarchy", fields: [parentId], references: [id])
   children   ProductType[] @relation("ProductTypeHierarchy")
   products   Product[]     @relation("ProductTypeProducts")
@@ -73,7 +73,7 @@ model ProductType {
 }
 
 model ProductSite {
-  id         Int    @id @default(autoincrement())
-  name       String @unique
-  products   Product[] @relation("ProductSiteProducts")
+  id         String     @id @default(uuid())    // UUID 사용
+  name       String     @unique
+  products   Product[]  @relation("ProductSiteProducts")
 }
