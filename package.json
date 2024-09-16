@@ -7,9 +7,11 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "migrate:local": "dotenv -e .env.local npx prisma migrate dev",
+    "migrate:local": "dotenv -e .env.local npx prisma migrate dev && yarn copy:schema",
     "migrate:production": "dotenv -e .env.production npx prisma migrate deploy",
+    "copy:schema": "cp prisma/generated/zod/index.ts src/types/schema.ts",
     "seed:local": "dotenv -e .env.local node prisma/seed.js",
+    "delete:local": "dotenv -e .env.local node prisma/delete.js",
     "seed:production": "dotenv -e .env.production node prisma/seed.js"
   },
   "dependencies": {
@@ -20,7 +22,9 @@
     "next": "14.2.11",
     "prisma": "^5.19.1",
     "react": "^18",
-    "react-dom": "^18"
+    "react-dom": "^18",
+    "zod": "^3.23.8",
+    "zod-prisma-types": "^3.1.8"
   },
   "devDependencies": {
     "@types/node": "^20",
