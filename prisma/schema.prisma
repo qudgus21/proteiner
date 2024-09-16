@@ -81,6 +81,4 @@ model ProductSite {
 
 generator zod {
   provider       = "zod-prisma-types"
-  createModelTypes                 = true // default is true
-
 }
