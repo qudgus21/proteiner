@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import createHttpError from "http-errors";
 import prisma from "@/lib/prisma";
 import { handleError } from "@/utils/errorHandler";
-import { ProductSiteCreateInputSchema, ProductSiteSchema } from "@/types/schema";
+import { ProductSiteCreateWithoutProductsInputSchema, ProductSiteSchema } from "@/types/schema";
 
 export async function GET() {
   try {
@@ -17,7 +17,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const parsedBody = ProductSiteCreateInputSchema.parse(body);
+    const parsedBody = ProductSiteCreateWithoutProductsInputSchema.parse(body);
 
     const newProductSite = await prisma.productSite.create({
       data: {
