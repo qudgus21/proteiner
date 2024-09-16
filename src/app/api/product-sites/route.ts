@@ -1,28 +1,34 @@
 import { NextResponse } from "next/server";
+import { v4 as uuidv4 } from "uuid";
+import createHttpError from "http-errors";
 import prisma from "@/lib/prisma";
-import { ProductSiteSchema } from "@/types/schema";
+import { handleError } from "@/utils/errorHandler";
+import { ProductSiteCreateInputSchema, ProductSiteSchema } from "@/types/schema";
 
 export async function GET() {
   try {
     const productSites = await prisma.productSite.findMany();
     return NextResponse.json(productSites);
   } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch product sites" }, { status: 500 });
+    return handleError(error);
   }
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const parsedBody = ProductSiteSchema.parse(body);
+    const parsedBody = ProductSiteCreateInputSchema.parse(body);
 
     const newProductSite = await prisma.productSite.create({
-      data: parsedBody,
+      data: {
+        id: uuidv4(),
+        ...parsedBody,
+      },
     });
 
     return NextResponse.json(newProductSite, { status: 201 });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to create product site" }, { status: 400 });
+    return handleError(error);
   }
 }
 
@@ -38,7 +44,7 @@ export async function PUT(request: Request) {
 
     return NextResponse.json(updatedProductSite);
   } catch (error) {
-    return NextResponse.json({ error: "Failed to update product site" }, { status: 400 });
+    return handleError(error);
   }
 }
 
@@ -48,7 +54,7 @@ export async function DELETE(request: Request) {
     const id = url.searchParams.get("id");
 
     if (!id) {
-      return NextResponse.json({ error: "ID is required" }, { status: 400 });
+      throw createHttpError.BadRequest();
     }
 
     await prisma.productSite.delete({
@@ -57,6 +63,6 @@ export async function DELETE(request: Request) {
 
     return NextResponse.json({ message: "Product site deleted successfully" });
   } catch (error) {
-    return NextResponse.json({ error: "Failed to delete product site" }, { status: 400 });
+    return handleError(error);
   }
 }
