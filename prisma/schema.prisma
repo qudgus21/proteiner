@@ -78,7 +78,3 @@ model ProductSite {
   name       String     @unique
   products   Product[]  @relation("ProductSiteProducts")
 }
-
-generator zod {
-  provider       = "zod-prisma-types"
-}
