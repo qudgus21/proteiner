@@ -1,0 +1,24 @@
+### GET: 모든 제품 타입 조회
+GET http://localhost:3000/api/product-types
+Accept: application/json
+
+### POST: 제품 타입 생성
+POST http://localhost:3000/api/product-types
+Content-Type: application/json
+
+{
+  "name": "돼지"
+}
+
+### PUT: 제품 타입 업데이트
+PUT http://localhost:3000/api/product-types
+Content-Type: application/json
+
+{
+  "id": "123123",
+  "name": "가전제품"
+}
+
+### DELETE: 제품 타입 삭제
+DELETE http://localhost:3000/api/product-types?id=123123
+Accept: application/json

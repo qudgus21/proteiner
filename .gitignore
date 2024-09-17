@@ -39,6 +39,3 @@ next-env.d.ts
 
 # zod
 prisma/generated/zod
-
-# local
-local-test

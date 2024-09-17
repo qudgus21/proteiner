@@ -1,0 +1,38 @@
+### GET: 모든 제품 조회
+GET http://localhost:3000/api/products
+Accept: application/json
+
+### POST: 제품 생성
+POST http://localhost:3000/api/products
+Content-Type: application/json
+
+{
+  "name": "Example Product",
+  "price": 30000,
+  "pricePer100g": 5000,
+  "productUrl": "http://example.com/product",
+  "affiliateUrl": "http://example.com/affiliate",
+  "imageUrl": "http://example.com/image.jpg",
+  "siteId": "51b93f4d-4fa1-403c-90e4-789d19ca8d38",
+  "productTypeId": "78d1b91a-3a58-4059-9dce-59ca6e162739"
+}
+
+### PUT: 제품 업데이트
+PUT http://localhost:3000/api/products
+Content-Type: application/json
+
+{
+  "id": "existing-product-id",
+  "name": "Updated Product Name",
+  "price": 35000,
+  "pricePer100g": 5500,
+  "productUrl": "http://example.com/updated-product",
+  "affiliateUrl": "http://example.com/updated-affiliate",
+  "imageUrl": "http://example.com/updated-image.jpg",
+  "productTypeId": "your-product-type-id",  // 'productTypeId'는 백엔드에서 'connect'로 처리됨
+  "siteId": "your-site-id"  // 'siteId'는 백엔드에서 'connect'로 처리됨
+}
+
+### DELETE: 제품 삭제
+DELETE http://localhost:3000/api/products?id=existing-product-id
+Accept: application/json
