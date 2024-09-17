@@ -10,8 +10,8 @@ Content-Type: application/json
   "name": "돼지"
 }
 
-### PUT: 제품 타입 업데이트
-PUT http://localhost:3000/api/product-types
+### PATCH: 제품 타입 업데이트
+PATCH http://localhost:3000/api/product-types
 Content-Type: application/json
 
 {

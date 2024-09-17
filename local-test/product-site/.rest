@@ -7,16 +7,16 @@ POST http://localhost:3000/api/product-sites
 Content-Type: application/json
 
 {
-  "names": "쿠팡"
+  "name": "쿠팡"
 }
 
-### PUT: 제품 사이트 업데이트
-PUT http://localhost:3000/api/product-sites
+### PATCH: 제품 사이트 업데이트
+PATCH http://localhost:3000/api/product-sites
 Content-Type: application/json
 
 {
   "id": "123123",
-  "name": "쿠팡바꿈"
+  "name": "쿠팡바꿈",
 }
 
 ### DELETE: 제품 사이트 삭제

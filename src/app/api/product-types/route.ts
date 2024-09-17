@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import createHttpError from "http-errors";
 import prisma from "@/lib/prisma";
 import { handleError } from "@/utils/errorHandler";
-import { ProductTypeCreateInputSchema, ProductTypeSchema } from "@/types/schema";
+import { idSchema, ProductTypeCreateSchema, ProductTypeUpdateSchema } from "@/types/schema";
 
 export async function GET() {
   try {
@@ -17,7 +17,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const parsedBody = ProductTypeCreateInputSchema.parse(body);
+    const parsedBody = ProductTypeCreateSchema.parse(body);
 
     const newProductType = await prisma.productType.create({
       data: {
@@ -32,10 +32,10 @@ export async function POST(request: Request) {
   }
 }
 
-export async function PUT(request: Request) {
+export async function PATCH(request: Request) {
   try {
     const body = await request.json();
-    const parsedBody = ProductTypeSchema.parse(body);
+    const parsedBody = ProductTypeUpdateSchema.parse(body);
 
     const updatedProductType = await prisma.productType.update({
       where: { id: parsedBody.id },
@@ -53,15 +53,15 @@ export async function DELETE(request: Request) {
     const url = new URL(request.url);
     const id = url.searchParams.get("id");
 
-    if (!id) {
-      throw createHttpError.BadRequest();
+    if (!id || !idSchema.safeParse(id).success) {
+      throw createHttpError.BadRequest("Invalid or missing ID");
     }
 
     await prisma.productType.delete({
       where: { id },
     });
 
-    return NextResponse.json({ message: "Product type deleted successfully" });
+    return NextResponse.json({ message: "Product Type deleted successfully" });
   } catch (error) {
     return handleError(error);
   }

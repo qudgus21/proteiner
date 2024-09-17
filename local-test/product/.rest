@@ -14,11 +14,13 @@ Content-Type: application/json
   "affiliateUrl": "http://example.com/affiliate",
   "imageUrl": "http://example.com/image.jpg",
   "siteId": "51b93f4d-4fa1-403c-90e4-789d19ca8d38",
-  "productTypeId": "78d1b91a-3a58-4059-9dce-59ca6e162739"
+  "productTypeId": "78d1b91a-3a58-4059-9dce-59ca6e162739",
+  "nutrition100gId": "your-nutrition-100g-id",
+  "nutritionTotalId": "your-nutrition-total-id"
 }
 
-### PUT: 제품 업데이트
-PUT http://localhost:3000/api/products
+### PATCH: 제품 업데이트
+PATCH http://localhost:3000/api/products
 Content-Type: application/json
 
 {
@@ -29,8 +31,10 @@ Content-Type: application/json
   "productUrl": "http://example.com/updated-product",
   "affiliateUrl": "http://example.com/updated-affiliate",
   "imageUrl": "http://example.com/updated-image.jpg",
-  "productTypeId": "your-product-type-id",  // 'productTypeId'는 백엔드에서 'connect'로 처리됨
-  "siteId": "your-site-id"  // 'siteId'는 백엔드에서 'connect'로 처리됨
+  "productTypeId": "your-product-type-id",
+  "siteId": "your-site-id",
+  "nutrition100gId": "your-nutrition-100g-id",
+  "nutritionTotalId": "your-nutrition-total-id"
 }
 
 ### DELETE: 제품 삭제

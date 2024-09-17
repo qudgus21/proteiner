@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import createHttpError from "http-errors";
 import prisma from "@/lib/prisma";
 import { handleError } from "@/utils/errorHandler";
-import { ProductSiteCreateWithoutProductsInputSchema, ProductSiteSchema } from "@/types/schema";
+import { idSchema, ProductSiteCreateSchema, ProductSiteUpdateSchema } from "@/types/schema";
 
 export async function GET() {
   try {
@@ -17,7 +17,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const parsedBody = ProductSiteCreateWithoutProductsInputSchema.parse(body);
+    const parsedBody = ProductSiteCreateSchema.parse(body);
 
     const newProductSite = await prisma.productSite.create({
       data: {
@@ -32,10 +32,10 @@ export async function POST(request: Request) {
   }
 }
 
-export async function PUT(request: Request) {
+export async function PATCH(request: Request) {
   try {
     const body = await request.json();
-    const parsedBody = ProductSiteSchema.parse(body);
+    const parsedBody = ProductSiteUpdateSchema.parse(body);
 
     const updatedProductSite = await prisma.productSite.update({
       where: { id: parsedBody.id },
@@ -53,8 +53,8 @@ export async function DELETE(request: Request) {
     const url = new URL(request.url);
     const id = url.searchParams.get("id");
 
-    if (!id) {
-      throw createHttpError.BadRequest();
+    if (!id || !idSchema.safeParse(id).success) {
+      throw createHttpError.BadRequest("Invalid or missing ID");
     }
 
     await prisma.productSite.delete({

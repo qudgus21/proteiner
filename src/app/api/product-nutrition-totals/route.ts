@@ -3,58 +3,72 @@ import { v4 as uuidv4 } from "uuid";
 import createHttpError from "http-errors";
 import prisma from "@/lib/prisma";
 import { handleError } from "@/utils/errorHandler";
-import { ProductNutritionTotalCreateInputSchema, ProductNutritionTotalSchema } from "@/types/schema";
+import { idSchema, ProductNutritionTotalCreateSchema, ProductNutritionTotalUpdateSchema } from "@/types/schema";
 
+// 모든 제품 영양 정보 총합 조회
 export async function GET() {
   try {
-    const productNutritions = await prisma.productNutritionTotal.findMany();
-    return NextResponse.json(productNutritions);
+    const productNutritionTotals = await prisma.productNutritionTotal.findMany();
+    return NextResponse.json(productNutritionTotals);
   } catch (error) {
     return handleError(error);
   }
 }
 
+// 제품 영양 정보 총합 생성
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const parsedBody = ProductNutritionTotalCreateInputSchema.parse(body);
+    const parsedBody = ProductNutritionTotalCreateSchema.parse(body);
 
-    const newProductNutrition = await prisma.productNutritionTotal.create({
+    const newProductNutritionTotal = await prisma.productNutritionTotal.create({
       data: {
         id: uuidv4(),
         ...parsedBody,
       },
     });
 
-    return NextResponse.json(newProductNutrition, { status: 201 });
+    return NextResponse.json(newProductNutritionTotal, { status: 201 });
   } catch (error) {
     return handleError(error);
   }
 }
 
-export async function PUT(request: Request) {
+// 제품 영양 정보 총합 업데이트
+export async function PATCH(request: Request) {
   try {
     const body = await request.json();
-    const parsedBody = ProductNutritionTotalSchema.parse(body);
+    const parsedBody = ProductNutritionTotalUpdateSchema.parse(body);
 
-    const updatedProductNutrition = await prisma.productNutritionTotal.update({
+    const updatedProductNutritionTotal = await prisma.productNutritionTotal.update({
       where: { id: parsedBody.id },
-      data: parsedBody,
+      data: {
+        calories: parsedBody.calories,
+        carbohydrates: parsedBody.carbohydrates,
+        sugars: parsedBody.sugars,
+        protein: parsedBody.protein,
+        fat: parsedBody.fat,
+        saturatedFat: parsedBody.saturatedFat,
+        transFat: parsedBody.transFat,
+        cholesterol: parsedBody.cholesterol,
+        sodium: parsedBody.sodium,
+      },
     });
 
-    return NextResponse.json(updatedProductNutrition);
+    return NextResponse.json(updatedProductNutritionTotal);
   } catch (error) {
     return handleError(error);
   }
 }
 
+// 제품 영양 정보 총합 삭제
 export async function DELETE(request: Request) {
   try {
     const url = new URL(request.url);
     const id = url.searchParams.get("id");
 
-    if (!id) {
-      throw createHttpError.BadRequest();
+    if (!id || !idSchema.safeParse(id).success) {
+      throw createHttpError.BadRequest("Invalid or missing ID");
     }
 
     await prisma.productNutritionTotal.delete({

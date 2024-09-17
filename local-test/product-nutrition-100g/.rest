@@ -7,7 +7,6 @@ POST http://localhost:3000/api/product-nutrition-100gs
 Content-Type: application/json
 
 {
-  "name": "Example Product Nutrition 100g",
   "calories": 200,
   "carbohydrates": 20,
   "sugars": 10,
@@ -19,13 +18,12 @@ Content-Type: application/json
   "sodium": 100
 }
 
-### PUT: 제품 영양(100g) 업데이트
-PUT http://localhost:3000/api/product-nutrition-100gs
+### PATCH: 제품 영양(100g) 업데이트
+PATCH http://localhost:3000/api/product-nutrition-100gs
 Content-Type: application/json
 
 {
   "id": "12345678-1234-1234-1234-1234567890ab",
-  "name": "Updated Product Nutrition 100g",
   "calories": 220,
   "carbohydrates": 25,
   "sugars": 12,

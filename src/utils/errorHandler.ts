@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import createError from "http-errors";
 import { ZodError } from "zod";
 
-export function handleError(error: unknown) {
+export function handleError(error: any) {
   let statusCode = 500;
 
   if (error instanceof createError.HttpError) {
@@ -11,5 +11,5 @@ export function handleError(error: unknown) {
     statusCode = 400;
   }
 
-  return NextResponse.json(error, { status: statusCode });
+  return NextResponse.json({ error: error, message: error.message }, { status: statusCode });
 }
