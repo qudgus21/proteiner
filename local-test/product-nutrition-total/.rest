@@ -1,0 +1,42 @@
+### GET: 모든 제품 영양(총) 조회
+GET http://localhost:3000/api/product-nutrition-totals
+Accept: application/json
+
+### POST: 제품 영양(총) 생성
+POST http://localhost:3000/api/product-nutrition-totals
+Content-Type: application/json
+
+{
+  "name": "Example Product Nutrition Total",
+  "calories": 1000,
+  "carbohydrates": 200,
+  "sugars": 100,
+  "protein": 50,
+  "fat": 25,
+  "saturatedFat": 10,
+  "transFat": 5,
+  "cholesterol": 150,
+  "sodium": 500
+}
+
+### PUT: 제품 영양(총) 업데이트
+PUT http://localhost:3000/api/product-nutrition-totals
+Content-Type: application/json
+
+{
+  "id": "12345678-1234-1234-1234-1234567890ab",
+  "name": "Updated Product Nutrition Total",
+  "calories": 1100,
+  "carbohydrates": 220,
+  "sugars": 120,
+  "protein": 55,
+  "fat": 30,
+  "saturatedFat": 12,
+  "transFat": 6,
+  "cholesterol": 160,
+  "sodium": 550
+}
+
+### DELETE: 제품 영양(총) 삭제
+DELETE http://localhost:3000/api/product-nutrition-totals?id=12345678-1234-1234-1234-1234567890ab
+Accept: application/json
