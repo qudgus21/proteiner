@@ -1,6 +1,47 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
 
+function getRandomValue(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+async function createNutritionEntries() {
+  const nutrition100gPromises = [];
+  const nutritionTotalPromises = [];
+
+  for (let i = 0; i < 81; i++) {
+    const nutrition100gData = {
+      calories: getRandomValue(100, 500),
+      carbohydrates: getRandomValue(100, 500),
+      sugars: getRandomValue(100, 500),
+      protein: getRandomValue(100, 500),
+      fat: getRandomValue(100, 500),
+      saturatedFat: getRandomValue(100, 500),
+      transFat: getRandomValue(100, 500),
+      cholesterol: getRandomValue(100, 500),
+      sodium: getRandomValue(100, 500),
+    };
+
+    const nutritionTotalData = {
+      calories: getRandomValue(100, 500),
+      carbohydrates: getRandomValue(100, 500),
+      sugars: getRandomValue(100, 500),
+      protein: getRandomValue(100, 500),
+      fat: getRandomValue(100, 500),
+      saturatedFat: getRandomValue(100, 500),
+      transFat: getRandomValue(100, 500),
+      cholesterol: getRandomValue(100, 500),
+      sodium: getRandomValue(100, 500),
+    };
+
+    nutrition100gPromises.push(prisma.productNutrition100g.create({ data: nutrition100gData }));
+    nutritionTotalPromises.push(prisma.productNutritionTotal.create({ data: nutritionTotalData }));
+  }
+
+  const [nutrition100s, nutritionTotals] = await Promise.all([Promise.all(nutrition100gPromises), Promise.all(nutritionTotalPromises)]);
+
+  return { nutrition100s, nutritionTotals };
+}
 async function main() {
   // 기존 데이터 삭제
   await prisma.product.deleteMany({});
@@ -9,15 +50,14 @@ async function main() {
   await prisma.productNutrition100g.deleteMany({});
   await prisma.productNutritionTotal.deleteMany({});
 
-  //parant type 생성
-  const [chicken, pork, duck, beef] = await Promise.all([
+  // Parent types 생성
+  const [chicken, pork, beef] = await Promise.all([
     prisma.productType.create({ data: { name: "닭" } }),
     prisma.productType.create({ data: { name: "돼지" } }),
     prisma.productType.create({ data: { name: "소" } }),
-    prisma.productType.create({ data: { name: "오리" } }),
   ]);
 
-  //sub type 생성
+  // Subtypes 생성
   const chickenSubtypes = await Promise.all([
     prisma.productType.create({ data: { name: "생닭", parentId: chicken.id } }),
     prisma.productType.create({ data: { name: "닭다리", parentId: chicken.id } }),
@@ -54,159 +94,48 @@ async function main() {
     prisma.productType.create({ data: { name: "기타", parentId: beef.id } }),
   ]);
 
-  const duckSubtypes = await Promise.all([
-    prisma.productType.create({ data: { name: "생오리", parentId: duck.id } }),
-    prisma.productType.create({ data: { name: "오리 가슴살", parentId: duck.id } }),
-    prisma.productType.create({ data: { name: "오리 다리살", parentId: duck.id } }),
-    prisma.productType.create({ data: { name: "오리 가공품 (훈제 오리 등)", parentId: duck.id } }),
-  ]);
-
+  // Site 생성
   const [coopang, ranking, meetry] = await Promise.all([
     prisma.productSite.create({ data: { name: "쿠팡" } }),
     prisma.productSite.create({ data: { name: "랭킹달컴" } }),
     prisma.productSite.create({ data: { name: "미트리" } }),
   ]);
 
-  await prisma.productNutritionTotal.createMany({
-    data: [
-      {
-        calories: 500,
-        carbohydrates: 60,
-        sugars: 20,
-        protein: 40,
-        fat: 10,
-        saturatedFat: 4,
-        transFat: 0,
-        cholesterol: 0,
-        sodium: 100,
-      },
-    ],
-  });
+  // Nutrition entries 생성
+  const { nutrition100s, nutritionTotals } = await createNutritionEntries();
 
-  const nutrition100s = await Promise.all([
-    prisma.productNutrition100g.create({
-      data: {
-        calories: 1100,
-        carbohydrates: 1100,
-        sugars: 1100,
-        protein: 1100,
-        fat: 1100,
-        saturatedFat: 1100,
-        transFat: 1100,
-        cholesterol: 1100,
-        sodium: 1100,
-      },
-    }),
-    prisma.productNutrition100g.create({
-      data: {
-        calories: 2100,
-        carbohydrates: 2100,
-        sugars: 2100,
-        protein: 2100,
-        fat: 2100,
-        saturatedFat: 2100,
-        transFat: 2100,
-        cholesterol: 2100,
-        sodium: 2100,
-      },
-    }),
-    prisma.productNutrition100g.create({
-      data: {
-        calories: 3100,
-        carbohydrates: 3100,
-        sugars: 3100,
-        protein: 3100,
-        fat: 3100,
-        saturatedFat: 3100,
-        transFat: 3100,
-        cholesterol: 3100,
-        sodium: 3100,
-      },
-    }),
-  ]);
+  // Subtypes와 parent 정보를 포함하여 제품 생성
+  const productPromises = [];
 
-  const nutritionTotals = await Promise.all([
-    prisma.productNutritionTotal.create({
-      data: {
-        calories: 1100,
-        carbohydrates: 1100,
-        sugars: 1100,
-        protein: 1100,
-        fat: 1100,
-        saturatedFat: 1100,
-        transFat: 1100,
-        cholesterol: 1100,
-        sodium: 1100,
-      },
-    }),
-    prisma.productNutritionTotal.create({
-      data: {
-        calories: 2100,
-        carbohydrates: 2100,
-        sugars: 2100,
-        protein: 2100,
-        fat: 2100,
-        saturatedFat: 2100,
-        transFat: 2100,
-        cholesterol: 2100,
-        sodium: 2100,
-      },
-    }),
-    prisma.productNutritionTotal.create({
-      data: {
-        calories: 3100,
-        carbohydrates: 3100,
-        sugars: 3100,
-        protein: 3100,
-        fat: 3100,
-        saturatedFat: 3100,
-        transFat: 3100,
-        cholesterol: 3100,
-        sodium: 3100,
-      },
-    }),
-  ]);
+  for (const subtype of [...chickenSubtypes, ...porkSubtypes, ...beefSubtypes]) {
+    // 부모 정보를 포함하여 서브타입을 재조회
+    const fullSubtype = await prisma.productType.findUnique({
+      where: { id: subtype.id },
+      include: { parent: true },
+    });
 
-  await prisma.product.createMany({
-    data: [
-      {
-        name: "Protein Powder",
-        price: 30000,
-        pricePer100g: 3000,
-        productUrl: "https://example.com/product1",
-        affiliateUrl: "https://affiliate.example.com/product1",
-        productTypeId: chickenSubtypes[0].id,
-        siteId: coopang.id,
-        nutrition100gId: nutrition100s[0].id,
-        nutritionTotalId: nutritionTotals[0].id,
-        imageUrl: "https://example.com/product1-image.jpg",
-      },
-      {
-        name: "Protein Powder",
-        price: 30000,
-        pricePer100g: 3000,
-        productUrl: "https://example.com/product1",
-        affiliateUrl: "https://affiliate.example.com/product1",
-        productTypeId: beefSubtypes[0].id,
-        siteId: ranking.id,
-        nutrition100gId: nutrition100s[1].id,
-        nutritionTotalId: nutritionTotals[1].id,
-        imageUrl: "https://example.com/product1-image.jpg",
-      },
-      {
-        name: "Protein Powder",
-        price: 30000,
-        pricePer100g: 3000,
-        productUrl: "https://example.com/product1",
-        affiliateUrl: "https://affiliate.example.com/product1",
-        productTypeId: duckSubtypes[0].id,
-        siteId: meetry.id,
-        nutrition100gId: nutrition100s[2].id,
-        nutritionTotalId: nutritionTotals[2].id,
-        imageUrl: "https://example.com/product1-image.jpg",
-      },
-    ],
-  });
+    for (let i = 1; i <= 3; i++) {
+      productPromises.push(
+        prisma.product.create({
+          data: {
+            name: `${fullSubtype.parent ? fullSubtype.parent.name : "Unknown Parent"} - ${fullSubtype.name} (${i})`,
+            price: getRandomValue(10000, 50000),
+            pricePer100g: getRandomValue(1000, 5000),
+            productUrl: "https://www.coupang.com",
+            affiliateUrl: "https://www.coupang.com",
+            productTypeId: fullSubtype.id,
+            siteId: coopang.id,
+            nutrition100gId: nutrition100s.pop().id,
+            nutritionTotalId: nutritionTotals.pop().id,
+            imageUrl:
+              "https://thumbnail6.coupangcdn.com/thumbnails/remote/230x230ex/image/retail/images/2882595627829337-dda8fe4b-040f-4d3a-9fc2-fa00a275ecf3.jpg",
+          },
+        })
+      );
+    }
+  }
+
+  await Promise.all(productPromises);
 }
 
 main()
