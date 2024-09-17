@@ -1,9 +1,15 @@
-import createError from "http-errors";
 import { NextResponse } from "next/server";
+import createError from "http-errors";
+import { ZodError } from "zod";
 
 export function handleError(error: unknown) {
-  const statusCode = error instanceof createError.HttpError ? error.status : 500;
-  const message = error instanceof Error ? error.message : "An unexpected error occurred";
+  let statusCode = 500;
 
-  return NextResponse.json({ error: message }, { status: statusCode });
+  if (error instanceof createError.HttpError) {
+    statusCode = error.status;
+  } else if (error instanceof ZodError) {
+    statusCode = 400;
+  }
+
+  return NextResponse.json(error, { status: statusCode });
 }
