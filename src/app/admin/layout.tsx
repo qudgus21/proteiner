@@ -3,9 +3,9 @@ import Link from "next/link";
 
 const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
-    <div className="flex h-[100vh]">
+    <section className="flex h-[100vh]">
       <div className={`w-64 bg-blue-300 text-white block lg:block min-w-[210px]`}>
-        <div className="p-4">
+        <nav className="p-4">
           <ul className="menu font-bold text-[15px] gap-[10px]">
             <li>
               <Link href="/admin/add-product" className="menu-item">
@@ -23,11 +23,11 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               </Link>
             </li>
           </ul>
-        </div>
+        </nav>
       </div>
 
       <div className="flex-1 p-6 h-[100vh] overflow-y-scroll">{children}</div>
-    </div>
+    </section>
   );
 };
 

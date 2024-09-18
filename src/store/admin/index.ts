@@ -1,0 +1,1 @@
+export { useProductStore } from "./productsStore";
