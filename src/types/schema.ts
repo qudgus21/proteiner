@@ -171,7 +171,7 @@ export const ProductTypeSchema = z
   .object({
     id: idSchema,
     name: z.string(),
-    parentId: idSchema.optional(),
+    parentId: idSchema.optional().nullable(),
   })
   .strict();
 
@@ -197,3 +197,8 @@ export const ProductSiteSchema = z
     name: z.string(),
   })
   .strict();
+
+// 자식 데이터가 있는 ProductType 스키마
+export const ProductTypeWithChildrenSchema = ProductTypeSchema.extend({
+  children: z.array(ProductTypeSchema).optional(),
+});

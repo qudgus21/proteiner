@@ -4,7 +4,7 @@ import Link from "next/link";
 const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   return (
     <div className="flex h-[100vh]">
-      <div className={`w-64 bg-blue-300 text-white block lg:block`}>
+      <div className={`w-64 bg-blue-300 text-white block lg:block min-w-[210px]`}>
         <div className="p-4">
           <ul className="menu font-bold text-[15px] gap-[10px]">
             <li>
@@ -26,7 +26,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         </div>
       </div>
 
-      <div className="flex-1 p-6">{children}</div>
+      <div className="flex-1 p-6 h-[100vh] overflow-y-scroll">{children}</div>
     </div>
   );
 };

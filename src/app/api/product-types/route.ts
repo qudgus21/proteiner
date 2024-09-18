@@ -3,12 +3,23 @@ import { v4 as uuidv4 } from "uuid";
 import createHttpError from "http-errors";
 import prisma from "@/lib/prisma";
 import { handleError } from "@/utils/errorHandler";
-import { idSchema, ProductTypeCreateSchema, ProductTypeUpdateSchema } from "@/types/schema";
+import { idSchema, ProductTypeCreateSchema, ProductTypeUpdateSchema, ProductTypeWithChildrenSchema } from "@/types/schema";
 
+//todo: default로 parent만 주기 => search 옵션으로 변경
 export async function GET() {
   try {
-    const productTypes = await prisma.productType.findMany();
-    return NextResponse.json(productTypes);
+    const productTypes = await prisma.productType.findMany({
+      where: {
+        parentId: null, // parentId가 null인 요소만 필터링
+      },
+      include: {
+        children: true, // 자식 데이터도 포함
+      },
+    });
+
+    //검증
+    const parsedData = ProductTypeWithChildrenSchema.array().parse(productTypes);
+    return NextResponse.json(parsedData);
   } catch (error) {
     return handleError(error);
   }
