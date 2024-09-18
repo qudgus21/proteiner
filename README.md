@@ -2,6 +2,7 @@
 
 - nextjs (frontend / backend)
 - css: tailwind, daisyui
+- state manage: zustand
 - formatter: eslint, prettier
 - type checking: typescript, zod
 - database: aws rds(postgresql), aws s3(날짜별 가격정보), ElastiCache redis
