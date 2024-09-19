@@ -152,17 +152,21 @@ const Filters = () => {
 
     // 전체 영양성분 필터
     for (const [key, { min, max }] of Object.entries(nutritionTotalFilters)) {
-      if (min || max) {
-        params.append(`nutritionTotal_${key}_min`, min);
-        params.append(`nutritionTotal_${key}_max`, max);
+      if (min !== undefined && min !== null && min !== "") {
+        params.append(`nutritionTotal_${key}_min`, min.toString());
+      }
+      if (max !== undefined && max !== null && max !== "") {
+        params.append(`nutritionTotal_${key}_max`, max.toString());
       }
     }
 
     // 100g 영양성분 필터
     for (const [key, { min, max }] of Object.entries(nutrition100gFilters)) {
-      if (min || max) {
-        params.append(`nutrition100_${key}_min`, min);
-        params.append(`nutrition100_${key}_max`, max);
+      if (min !== undefined && min !== null && min !== "") {
+        params.append(`nutrition100_${key}_min`, min.toString());
+      }
+      if (max !== undefined && max !== null && max !== "") {
+        params.append(`nutrition100_${key}_max`, max.toString());
       }
     }
 
@@ -172,6 +176,7 @@ const Filters = () => {
   const handleFetchBtnClick = async () => {
     try {
       const params = buildQueryParams();
+
       const response = await axios.get("/api/products", { params });
       return response.data;
     } catch (error) {
