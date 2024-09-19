@@ -1,5 +1,3 @@
-"use client";
-
 import React from "react";
 import Filters from "./components/Filters";
 import ProductsList from "./components/ProductsList";

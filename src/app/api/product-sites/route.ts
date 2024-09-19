@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import createHttpError from "http-errors";
 import prisma from "@/lib/prisma";
 import { handleError } from "@/utils/errorHandler";
-import { idSchema, ProductSiteCreateSchema, ProductSiteUpdateSchema } from "@/types/schema";
+import { idSchema, ProductSiteCreateSchema, ProductSiteUpdateSchema } from "@/schemas/productSite";
 
 export async function GET() {
   try {

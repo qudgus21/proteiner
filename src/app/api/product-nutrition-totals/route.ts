@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import createHttpError from "http-errors";
 import prisma from "@/lib/prisma";
 import { handleError } from "@/utils/errorHandler";
-import { idSchema, ProductNutritionTotalCreateSchema, ProductNutritionTotalUpdateSchema } from "@/types/schema";
+import { idSchema, ProductNutritionTotalCreateSchema, ProductNutritionTotalUpdateSchema } from "@/schemas/productNutritionTotal";
 
 // 모든 제품 영양 정보 총합 조회
 export async function GET() {

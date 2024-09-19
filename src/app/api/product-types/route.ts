@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import createHttpError from "http-errors";
 import prisma from "@/lib/prisma";
 import { handleError } from "@/utils/errorHandler";
-import { idSchema, ProductTypeCreateSchema, ProductTypeUpdateSchema, ProductTypeWithChildrenSchema } from "@/types/schema";
+import { idSchema, ProductTypeCreateSchema, ProductTypeUpdateSchema, ProductTypeWithChildrenSchema } from "@/schemas/productType";
 
 //todo: default로 parent만 주기 => search 옵션으로 변경
 export async function GET() {
