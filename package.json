@@ -17,6 +17,7 @@
     "@prisma/client": "^5.19.1",
     "@types/http-errors": "^2.0.4",
     "@types/uuid": "^10.0.0",
+    "add": "^2.0.6",
     "axios": "^1.7.7",
     "daisyui": "^4.12.10",
     "dotenv": "^16.4.5",
@@ -27,6 +28,7 @@
     "react-dom": "^18",
     "react-icons": "^5.3.0",
     "uuid": "^10.0.0",
+    "yarn": "^1.22.22",
     "zod": "^3.23.8",
     "zustand": "^5.0.0-rc.2"
   },

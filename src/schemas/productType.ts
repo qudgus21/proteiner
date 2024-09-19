@@ -29,7 +29,12 @@ export const ProductTypeSchema = z
   })
   .strict();
 
-// 자식 데이터가 있는 ProductType 스키마
+// 자식 데이터가 필수인 ProductType 스키마
 export const ProductTypeWithChildrenSchema = ProductTypeSchema.extend({
-  children: z.array(ProductTypeSchema).optional(),
+  children: z.array(ProductTypeSchema), // children은 필수
+});
+
+// 자식 데이터가 옵션인 ProductType 스키마
+export const ProductTypeWithOptionalChildrenSchema = ProductTypeSchema.extend({
+  children: z.array(ProductTypeSchema).optional(), // children은 옵셔널
 });

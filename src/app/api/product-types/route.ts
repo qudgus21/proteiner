@@ -3,7 +3,7 @@ import { v4 as uuidv4 } from "uuid";
 import createHttpError from "http-errors";
 import prisma from "@/lib/prisma";
 import { handleError } from "@/utils/errorHandler";
-import { idSchema, ProductTypeCreateSchema, ProductTypeUpdateSchema, ProductTypeWithChildrenSchema } from "@/schemas/productType";
+import { idSchema, ProductTypeCreateSchema, ProductTypeUpdateSchema, ProductTypeWithOptionalChildrenSchema } from "@/schemas/productType";
 
 //todo: default로 parent만 주기 => search 옵션으로 변경
 export async function GET() {
@@ -18,7 +18,7 @@ export async function GET() {
     });
 
     //검증
-    const parsedData = ProductTypeWithChildrenSchema.array().parse(productTypes);
+    const parsedData = ProductTypeWithOptionalChildrenSchema.array().parse(productTypes);
     return NextResponse.json(parsedData);
   } catch (error) {
     return handleError(error);

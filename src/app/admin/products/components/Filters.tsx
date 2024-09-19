@@ -5,7 +5,7 @@ import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import axios from "axios";
 import { nutritionColumns } from "@/constants";
 import { ProductSite } from "@/types/productSite";
-import { ProductTypeWithChildren } from "@/types/productType";
+import { ProductTypeWithOptionalChildren, ProductTypeWithChildren } from "@/types/productType";
 
 // 필터 타입 정의
 type FilterType = "site" | "type" | "nutrition100" | "nutritionTotal";
@@ -13,12 +13,9 @@ type FilterType = "site" | "type" | "nutrition100" | "nutritionTotal";
 // 영양성분 필터 범위 타입 정의
 type NutritionFilterRange = "min" | "max";
 
-// 영양성분 필터 종류 정의
-type NutritionFilterType = "total" | "100g";
-
 const Filters = () => {
   const [productSites, setProductSites] = useState<ProductSite[]>([]);
-  const [parentProductTypes, setParentProductTypes] = useState<ProductTypeWithChildren[]>([]);
+  const [productTypes, setProductTypes] = useState<ProductTypeWithOptionalChildren[]>([]);
 
   const [filtersExpanded, setFiltersExpanded] = useState<{
     site: boolean;
@@ -57,7 +54,7 @@ const Filters = () => {
   const fetchProductTypes = async () => {
     try {
       const response = await axios.get("/api/product-types");
-      setParentProductTypes(response.data);
+      setProductTypes(response.data);
     } catch (error) {
       console.log("Error fetching product types:", error);
     }
@@ -71,66 +68,116 @@ const Filters = () => {
     }));
   };
 
-  // 체크박스 상태 업데이트
-  const handleCheckboxChange = (id: string, type: "site" | "type") => {
-    if (type === "site") {
-      setSelectedSites((prev) => {
-        const newSet = new Set(prev);
-        if (newSet.has(id)) {
-          newSet.delete(id);
-        } else {
-          newSet.add(id);
-        }
-        return newSet;
-      });
-    } else if (type === "type") {
-      setSelectedTypes((prev) => {
-        const newSet = new Set(prev);
-        if (newSet.has(id)) {
-          newSet.delete(id);
-        } else {
-          newSet.add(id);
-        }
-        return newSet;
-      });
-    }
+  // 사이트 체크박스 상태 업데이트
+  const handleSiteCheckboxChange = (id: string) => {
+    setSelectedSites((prev) => {
+      const newSet = new Set(prev);
+      newSet.has(id) ? newSet.delete(id) : newSet.add(id);
+      return newSet;
+    });
   };
 
-  // 영양성분 필터 상태 업데이트 (전체 및 100g 분리)
-  const handleNutritionFilterChange = (
-    e: React.ChangeEvent<HTMLInputElement>,
-    type: NutritionFilterRange,
-    column: string,
-    filterType: NutritionFilterType
-  ) => {
+  // 자식 체크박스가 모두 선택된 경우 부모를 선택하도록
+  const handleChildCheckboxChange = (parentId: string, childId: string) => {
+    setSelectedTypes((prev) => {
+      const newSet = new Set(prev);
+      newSet.has(childId) ? newSet.delete(childId) : newSet.add(childId);
+
+      // 모든 자식이 선택된 경우 부모도 선택
+      const parent = productTypes.find((p): p is ProductTypeWithChildren => p.id === parentId);
+
+      if (parent?.children.every((child) => newSet.has(child.id))) {
+        newSet.add(parentId);
+      } else {
+        newSet.delete(parentId);
+      }
+      return newSet;
+    });
+  };
+
+  // 부모 체크박스가 선택된 경우 모든 자식 선택하도록
+  const handleParentCheckboxChange = (parentId: string) => {
+    setSelectedTypes((prev) => {
+      const parent = productTypes.find((p) => p.id === parentId);
+      const newSet = new Set(prev);
+
+      if (newSet.has(parentId)) {
+        parent?.children?.forEach((child) => newSet.delete(child.id));
+        newSet.delete(parentId);
+      } else {
+        parent?.children?.forEach((child) => newSet.add(child.id));
+        newSet.add(parentId);
+      }
+
+      return newSet;
+    });
+  };
+
+  // 전체 영양성분 필터 상태 업데이트
+  const handleNutritionTotalFilterChange = (e: React.ChangeEvent<HTMLInputElement>, type: NutritionFilterRange, column: string) => {
     const value = e.target.value;
-    if (filterType === "total") {
-      setNutritionTotalFilters((prev) => ({
-        ...prev,
-        [column]: {
-          ...prev[column],
-          [type]: value,
-        },
-      }));
-    } else {
-      setNutrition100gFilters((prev) => ({
-        ...prev,
-        [column]: {
-          ...prev[column],
-          [type]: value,
-        },
-      }));
-    }
+    setNutritionTotalFilters((prev) => ({
+      ...prev,
+      [column]: {
+        ...prev[column],
+        [type]: value,
+      },
+    }));
   };
 
-  const renderChildren = (children: ProductTypeWithChildren[]) => {
-    return children.map((child) => (
-      <label className="label cursor-pointer min-w-[150px]" key={child.id}>
-        <span className="label-text">{child.name}</span>
-        <input type="checkbox" checked={selectedTypes.has(child.id)} onChange={() => handleCheckboxChange(child.id, "type")} className="checkbox" />
-        {child.children && child.children.length > 0 && <div className="ml-4">{renderChildren(child.children)}</div>}
-      </label>
-    ));
+  // 100g 영양성분 필터 상태 업데이트
+  const handleNutrition100gFilterChange = (e: React.ChangeEvent<HTMLInputElement>, type: NutritionFilterRange, column: string) => {
+    const value = e.target.value;
+    setNutrition100gFilters((prev) => ({
+      ...prev,
+      [column]: {
+        ...prev[column],
+        [type]: value,
+      },
+    }));
+  };
+
+  const buildQueryParams = () => {
+    const params = new URLSearchParams();
+
+    // 사이트 필터
+    if (selectedSites.size > 0) {
+      params.append("sites", Array.from(selectedSites).join(","));
+    }
+
+    // 상품유형 필터
+    if (selectedTypes.size > 0) {
+      params.append("types", Array.from(selectedTypes).join(","));
+    }
+
+    // 전체 영양성분 필터
+    for (const [key, { min, max }] of Object.entries(nutritionTotalFilters)) {
+      if (min || max) {
+        params.append(`nutritionTotal_${key}_min`, min);
+        params.append(`nutritionTotal_${key}_max`, max);
+      }
+    }
+
+    // 100g 영양성분 필터
+    for (const [key, { min, max }] of Object.entries(nutrition100gFilters)) {
+      if (min || max) {
+        params.append(`nutrition100_${key}_min`, min);
+        params.append(`nutrition100_${key}_max`, max);
+      }
+    }
+
+    return params;
+  };
+
+  const handleFetchBtnClick = async () => {
+    try {
+      const params = buildQueryParams();
+      const response = await axios.get("/api/products", { params });
+      return response.data;
+    } catch (error) {
+      console.error("Error fetching filtered products:", error);
+      throw error;
+    }
   };
 
   return (
@@ -146,12 +193,7 @@ const Filters = () => {
             {productSites.map((item) => (
               <label className="label cursor-pointer" key={item.id}>
                 <span className="label-text">{item.name}</span>
-                <input
-                  type="checkbox"
-                  checked={selectedSites.has(item.id)}
-                  onChange={() => handleCheckboxChange(item.id, "site")}
-                  className="checkbox"
-                />
+                <input type="checkbox" checked={selectedSites.has(item.id)} onChange={() => handleSiteCheckboxChange(item.id)} className="checkbox" />
               </label>
             ))}
           </div>
@@ -160,24 +202,40 @@ const Filters = () => {
 
       {/* 상품유형 필터 */}
       <div>
-        <button onClick={() => toggleFilters("type")} className="btn btn-outline mb-4 flex items-center min-w-[105px]">
+        <button onClick={() => toggleFilters("type")} className="btn btn-outline mb-4 flex items-center min-w-[120px]">
           <span className="mr-2">상품유형</span>
           {filtersExpanded.type ? <FaChevronUp /> : <FaChevronDown />}
         </button>
         {filtersExpanded.type && (
           <div className="form-control">
-            {parentProductTypes.map((parent) => (
+            {productTypes.map((parent) => (
               <div className="flex items-start" key={parent.id}>
                 <label className="label cursor-pointer flex gap-2 min-w-[105px]">
                   <span className="label-text font-bold">{parent.name}</span>
                   <input
                     type="checkbox"
                     checked={selectedTypes.has(parent.id)}
-                    onChange={() => handleCheckboxChange(parent.id, "type")}
+                    onChange={() => {
+                      handleParentCheckboxChange(parent.id);
+                    }}
                     className="checkbox"
                   />
                 </label>
-                {parent.children && parent.children.length > 0 && <div className="ml-4">{renderChildren(parent.children)}</div>}
+                {parent.children && parent.children.length > 0 && (
+                  <div className="ml-4">
+                    {parent.children.map((child) => (
+                      <label className="label cursor-pointer min-w-[150px]" key={child.id}>
+                        <span className="label-text">{child.name}</span>
+                        <input
+                          type="checkbox"
+                          checked={selectedTypes.has(child.id)}
+                          onChange={() => child.parentId && handleChildCheckboxChange(child.parentId, child.id)}
+                          className="checkbox"
+                        />
+                      </label>
+                    ))}
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -186,8 +244,8 @@ const Filters = () => {
 
       {/* 전체 영양성분 필터 */}
       <div>
-        <button onClick={() => toggleFilters("nutritionTotal")} className="btn btn-outline mb-4 flex items-center">
-          <span className="mr-2">전체 영양성분</span>
+        <button onClick={() => toggleFilters("nutritionTotal")} className="btn btn-outline mb-4 flex items-center min-w-[120px]">
+          <span className="mr-2">전체 성분</span>
           {filtersExpanded.nutritionTotal ? <FaChevronUp /> : <FaChevronDown />}
         </button>
         {filtersExpanded.nutritionTotal &&
@@ -197,14 +255,14 @@ const Filters = () => {
                 <input
                   type="number"
                   value={nutritionTotalFilters[column]?.min || ""}
-                  onChange={(e) => handleNutritionFilterChange(e, "min", column, "total")}
+                  onChange={(e) => handleNutritionTotalFilterChange(e, "min", column)}
                   placeholder={`최소 ${column}`}
                   className="input input-bordered mr-4"
                 />
                 <input
                   type="number"
                   value={nutritionTotalFilters[column]?.max || ""}
-                  onChange={(e) => handleNutritionFilterChange(e, "max", column, "total")}
+                  onChange={(e) => handleNutritionTotalFilterChange(e, "max", column)}
                   placeholder={`최대 ${column}`}
                   className="input input-bordered"
                 />
@@ -215,8 +273,8 @@ const Filters = () => {
 
       {/* 100g 영양성분 필터 */}
       <div>
-        <button onClick={() => toggleFilters("nutrition100")} className="btn btn-outline mb-4 flex items-center">
-          <span className="mr-2">100g 영양성분</span>
+        <button onClick={() => toggleFilters("nutrition100")} className="btn btn-outline mb-4 flex items-center min-w-[125px]">
+          <span className="mr-2">100g 성분</span>
           {filtersExpanded.nutrition100 ? <FaChevronUp /> : <FaChevronDown />}
         </button>
         {filtersExpanded.nutrition100 &&
@@ -226,14 +284,14 @@ const Filters = () => {
                 <input
                   type="number"
                   value={nutrition100gFilters[column]?.min || ""}
-                  onChange={(e) => handleNutritionFilterChange(e, "min", column, "100g")}
+                  onChange={(e) => handleNutrition100gFilterChange(e, "min", column)}
                   placeholder={`최소 ${column}`}
                   className="input input-bordered mr-4"
                 />
                 <input
                   type="number"
                   value={nutrition100gFilters[column]?.max || ""}
-                  onChange={(e) => handleNutritionFilterChange(e, "max", column, "100g")}
+                  onChange={(e) => handleNutrition100gFilterChange(e, "max", column)}
                   placeholder={`최대 ${column}`}
                   className="input input-bordered"
                 />
@@ -241,6 +299,14 @@ const Filters = () => {
             </div>
           ))}
       </div>
+      <button
+        onClick={() => {
+          handleFetchBtnClick();
+        }}
+        className="btn btn-active btn-neutral"
+      >
+        검색
+      </button>
     </section>
   );
 };
