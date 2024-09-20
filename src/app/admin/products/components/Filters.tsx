@@ -5,7 +5,7 @@ import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import axios from "axios";
 import { nutritionColumns } from "@/constants";
 import { ProductSite } from "@/types/productSite";
-import { ProductTypeWithOptionalChildren, ProductTypeWithChildren } from "@/types/productType";
+import { ProductTypeWithOptionalChildren, ProductTypeWithChildren, ProductType } from "@/types/productType";
 
 // 필터 타입 정의
 type FilterType = "site" | "type" | "nutrition100" | "nutritionTotal";
@@ -45,7 +45,11 @@ const Filters = () => {
   const fetchProductSites = async () => {
     try {
       const response = await axios.get("/api/product-sites");
-      setProductSites(response.data);
+      const sites = response.data;
+      const siteIds = sites.map((site: ProductType) => site.id);
+
+      setProductSites(sites);
+      setSelectedSites(new Set(siteIds));
     } catch (error) {
       console.log("Error fetching product sites:", error);
     }
@@ -54,7 +58,21 @@ const Filters = () => {
   const fetchProductTypes = async () => {
     try {
       const response = await axios.get("/api/product-types");
-      setProductTypes(response.data);
+      const types = response.data;
+
+      setProductTypes(types);
+
+      const typeSet = new Set<string>();
+
+      types.forEach((parantType: ProductTypeWithChildren) => {
+        typeSet.add(parantType.id);
+
+        parantType.children.forEach((childType) => {
+          typeSet.add(childType.id);
+        });
+      });
+
+      setSelectedTypes(typeSet);
     } catch (error) {
       console.log("Error fetching product types:", error);
     }
@@ -312,6 +330,7 @@ const Filters = () => {
       >
         검색
       </button>
+      <button className="btn btn-warning">초기화</button>
     </section>
   );
 };

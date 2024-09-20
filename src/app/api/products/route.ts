@@ -15,8 +15,6 @@ export async function GET(request: Request) {
   const nutritionTotalFilters: { [key: string]: { min?: number; max?: number } } = {};
   const nutrition100gFilters: { [key: string]: { min?: number; max?: number } } = {};
 
-  console.log("siteIds", siteIds);
-
   // 전체 영양성분 필터 파싱
   Object.keys(nutritionColumns).forEach((key) => {
     const minKey = `nutritionTotal_${key}_min`;
@@ -43,28 +41,34 @@ export async function GET(request: Request) {
     }
   });
 
+  const andItems = [];
+
+  if (siteIds.length > 0) andItems.push({ siteId: { in: siteIds } });
+  if (typeIds.length > 0) andItems.push({ productTypeId: { in: typeIds } });
+
+  // [
+  //   { siteId: { in: siteIds } },
+  //   { productTypeId: { in: typeIds } },
+  //   //Nutrition total filters
+  //   ...Object.entries(nutritionTotalFilters).flatMap(([key, { min, max }]) => {
+  //     const conditions = [];
+  //     if (min !== undefined) conditions.push({ [key]: { gte: min } });
+  //     if (max !== undefined) conditions.push({ [key]: { lte: max } });
+  //     return conditions.length > 0 ? { OR: conditions } : [];
+  //   }),
+  //   // Nutrition 100g filters
+  //   ...Object.entries(nutrition100gFilters).flatMap(([key, { min, max }]) => {
+  //     const conditions = [];
+  //     if (min !== undefined) conditions.push({ pricePer100g: { gte: min } });
+  //     if (max !== undefined) conditions.push({ pricePer100g: { lte: max } });
+  //     return conditions.length > 0 ? { OR: conditions } : [];
+  //   }),
+  // ]
+
   try {
-    // 조건별로 where 필터링을 추가합니다.
     const products = await prisma.product.findMany({
       where: {
-        AND: [
-          { siteId: { in: siteIds } },
-          { productTypeId: { in: typeIds } },
-          // Nutrition total filters
-          // ...Object.entries(nutritionTotalFilters).flatMap(([key, { min, max }]) => {
-          //   const conditions = [];
-          //   if (min !== undefined) conditions.push({ [key]: { gte: min } });
-          //   if (max !== undefined) conditions.push({ [key]: { lte: max } });
-          //   return conditions.length > 0 ? { OR: conditions } : [];
-          // }),
-          // // Nutrition 100g filters
-          // ...Object.entries(nutrition100gFilters).flatMap(([key, { min, max }]) => {
-          //   const conditions = [];
-          //   if (min !== undefined) conditions.push({ pricePer100g: { gte: min } });
-          //   if (max !== undefined) conditions.push({ pricePer100g: { lte: max } });
-          //   return conditions.length > 0 ? { OR: conditions } : [];
-          // }),
-        ].filter(Boolean),
+        AND: andItems.filter(Boolean),
       },
     });
 
