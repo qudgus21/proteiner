@@ -203,6 +203,13 @@ const Filters = () => {
     }
   };
 
+  const resetFilters = () => {
+    setSelectedSites(new Set());
+    setSelectedTypes(new Set());
+    setNutritionTotalFilters({});
+    setNutrition100gFilters({});
+  };
+
   return (
     <section className="mb-4 flex gap-4">
       {/* 사이트 필터 */}
@@ -280,14 +287,14 @@ const Filters = () => {
                   value={nutritionTotalFilters[column]?.min || ""}
                   onChange={(e) => handleNutritionTotalFilterChange(e, "min", column)}
                   placeholder={`최소 ${column}`}
-                  className="input input-bordered mr-4"
+                  className="input input-bordered mr-4 w-[120px]"
                 />
                 <input
                   type="number"
                   value={nutritionTotalFilters[column]?.max || ""}
                   onChange={(e) => handleNutritionTotalFilterChange(e, "max", column)}
                   placeholder={`최대 ${column}`}
-                  className="input input-bordered"
+                  className="input input-bordered w-[120px]"
                 />
               </div>
             </div>
@@ -309,14 +316,14 @@ const Filters = () => {
                   value={nutrition100gFilters[column]?.min || ""}
                   onChange={(e) => handleNutrition100gFilterChange(e, "min", column)}
                   placeholder={`최소 ${column}`}
-                  className="input input-bordered mr-4"
+                  className="input input-bordered mr-4 w-[120px]"
                 />
                 <input
                   type="number"
                   value={nutrition100gFilters[column]?.max || ""}
                   onChange={(e) => handleNutrition100gFilterChange(e, "max", column)}
                   placeholder={`최대 ${column}`}
-                  className="input input-bordered"
+                  className="input input-bordered w-[120px]"
                 />
               </div>
             </div>
@@ -326,11 +333,18 @@ const Filters = () => {
         onClick={() => {
           handleFetchBtnClick();
         }}
-        className="btn btn-active btn-neutral"
+        className="btn btn-active btn-neutral w-[100px]"
       >
         검색
       </button>
-      <button className="btn btn-warning">초기화</button>
+      <button
+        className="btn btn-warning w-[100px]"
+        onClick={() => {
+          resetFilters();
+        }}
+      >
+        초기화
+      </button>
     </section>
   );
 };
