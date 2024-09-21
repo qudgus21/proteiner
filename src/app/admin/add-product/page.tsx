@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { nutritionColumns, nutritionMapping } from "@/constants";
+import { useProductStore } from "@/stores";
 
 const AddProductPage: React.FC = () => {
   const [name, setName] = useState<string>("");
@@ -43,6 +44,48 @@ const AddProductPage: React.FC = () => {
       <div className="card bg-base-100 shadow-xl">
         <div className="card-body">
           <form onSubmit={handleSubmit} className="space-y-4">
+            {/* 사이트 선택 */}
+            {/* <div>
+              <label htmlFor="productSite" className="label">
+                <span className="label-text">사이트 선택</span>
+              </label>
+              <select
+                id="productSite"
+                value={selectedSite}
+                onChange={(e) => setSelectedSite(e.target.value)}
+                required
+                className="select select-bordered w-full"
+              >
+                <option value="">사이트를 선택하세요</option>
+                {productSites.map((site) => (
+                  <option key={site.id} value={site.id}>
+                    {site.name}
+                  </option>
+                ))}
+              </select>
+            </div> */}
+
+            {/* 타입 선택 (자식 타입만) */}
+            {/* <div>
+              <label htmlFor="productType" className="label">
+                <span className="label-text">타입 선택 (자식만)</span>
+              </label>
+              <select
+                id="productType"
+                value={selectedType}
+                onChange={(e) => setSelectedType(e.target.value)}
+                required
+                className="select select-bordered w-full"
+              >
+                <option value="">타입을 선택하세요</option>
+                {filteredTypes.map((type: any) => (
+                  <option key={type.id} value={type.id}>
+                    {type.name}
+                  </option>
+                ))}
+              </select>
+            </div> */}
+
             <div>
               <label htmlFor="name" className="label">
                 <span className="label-text">상품 이름</span>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useProductStore } from "@/store";
+import { useProductStore } from "@/stores";
 import { Pagination } from "@/components";
 
 const List = () => {

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { nutritionColumns } from "@/constants";
 import { ProductTypeWithOptionalChildren, ProductTypeWithChildren, ProductSite } from "@/types";
-import { useLoadingStore, useProductStore } from "@/store";
+import { useLoadingStore, useProductStore } from "@/stores";
 
 // 필터 타입 정의
 type FilterType = "site" | "type" | "nutrition100" | "nutritionTotal";

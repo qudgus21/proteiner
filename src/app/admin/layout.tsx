@@ -2,7 +2,7 @@
 
 import React, { useEffect } from "react";
 import Link from "next/link";
-import { useLoadingStore, useProductStore } from "@/store";
+import { useLoadingStore, useProductStore } from "@/stores";
 import { LoadingSpinner } from "@/components";
 
 const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
