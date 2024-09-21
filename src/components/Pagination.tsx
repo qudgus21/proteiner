@@ -11,6 +11,16 @@ interface PaginationProps {
 
 const Pagination: React.FC<PaginationProps> = ({ totalItems, itemsPerPage, currentPage, onPageChange }) => {
   const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const visiblePages = 5; // 보여줄 페이지 수
+
+  // 시작 페이지와 끝 페이지 계산
+  let startPage = Math.max(1, currentPage - Math.floor(visiblePages / 2));
+  let endPage = Math.min(totalPages, startPage + visiblePages - 1);
+
+  // 페이지 수가 5보다 적을 경우 조정
+  if (endPage - startPage < visiblePages - 1) {
+    startPage = Math.max(1, endPage - visiblePages + 1);
+  }
 
   return (
     <div className="flex justify-center mt-4">
@@ -22,7 +32,7 @@ const Pagination: React.FC<PaginationProps> = ({ totalItems, itemsPerPage, curre
         {"<"}
       </button>
 
-      {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
+      {Array.from({ length: endPage - startPage + 1 }, (_, i) => startPage + i).map((pageNumber) => (
         <button
           key={pageNumber}
           onClick={() => onPageChange(pageNumber)}
