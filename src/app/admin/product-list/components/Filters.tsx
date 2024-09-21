@@ -17,6 +17,8 @@ const Filters = () => {
   const { setLoading } = useLoadingStore();
   const { fetchProducts } = useProductStore();
 
+  const [name, setName] = useState("");
+
   const [productSites, setProductSites] = useState<ProductSite[]>([]);
   const [productTypes, setProductTypes] = useState<ProductTypeWithOptionalChildren[]>([]);
 
@@ -155,6 +157,11 @@ const Filters = () => {
   const buildQueryParams = () => {
     const params = new URLSearchParams();
 
+    // 이름 필터
+    if (name) {
+      params.append("name", name);
+    }
+
     // 사이트 필터
     if (selectedSites.size > 0) {
       params.append("sites", Array.from(selectedSites).join(","));
@@ -208,8 +215,26 @@ const Filters = () => {
     setNutrition100gFilters({});
   };
 
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      handleFetchBtnClick();
+    }
+  };
+
   return (
     <section className="mb-4 flex gap-4">
+      {/* 이름 필터 */}
+      <div>
+        <input
+          type="text"
+          value={name}
+          onKeyDown={handleKeyDown}
+          onChange={(e) => setName(e.target.value)}
+          placeholder="상품 이름 입력"
+          className="input input-bordered w-[200px] mb-4"
+        />
+      </div>
+
       {/* 사이트 필터 */}
       <div>
         <button onClick={() => toggleFilters("site")} className="btn btn-outline mb-4 flex items-center min-w-[105px]">

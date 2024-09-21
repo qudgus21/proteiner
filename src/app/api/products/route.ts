@@ -13,6 +13,7 @@ export async function GET(request: Request) {
 
   const siteIds = searchParams.get("sites")?.split(",") || [];
   const typeIds = searchParams.get("types")?.split(",") || [];
+  const nameFilter = searchParams.get("name") || "";
 
   const nutritionTotalFilters: { [key: string]: { min?: number; max?: number } } = {};
   const nutrition100gFilters: { [key: string]: { min?: number; max?: number } } = {};
@@ -46,6 +47,15 @@ export async function GET(request: Request) {
   const andItems = [];
 
   andItems.push({ siteId: { in: siteIds.length > 0 ? siteIds : [] } }, { productTypeId: { in: typeIds.length > 0 ? typeIds : [] } });
+
+  if (nameFilter) {
+    andItems.push({
+      name: {
+        contains: nameFilter,
+        mode: "insensitive",
+      },
+    });
+  }
 
   // 전체 영양성분 필터 적용
   Object.entries(nutritionTotalFilters).forEach(([key, { min, max }]) => {
