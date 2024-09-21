@@ -1,18 +1,26 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useProductStore } from "@/store";
+import { Pagination } from "@/components";
 
 const ProductsList = () => {
-  const products = useProductStore((state) => state.products);
-  const fetchProducts = useProductStore((state) => state.fetchProducts);
+  const { products, fetchProducts } = useProductStore();
+  const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
     fetchProducts();
   }, []);
 
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const itemsPerPage = 8;
+  const paginatedProducts = products.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
   return (
-    <div className="card bg-base-100 shadow-xl">
+    <div className="card bg-base-100 shadow-xl pb-10">
       <div className="card-body">
         <table className="table w-full">
           <thead>
@@ -26,7 +34,7 @@ const ProductsList = () => {
             </tr>
           </thead>
           <tbody>
-            {products.map((product) => (
+            {paginatedProducts.map((product) => (
               <tr key={product.id}>
                 <td>{product.name}</td>
                 <td>{product.price}</td>
@@ -51,6 +59,7 @@ const ProductsList = () => {
           </tbody>
         </table>
       </div>
+      <Pagination totalItems={products.length} itemsPerPage={itemsPerPage} currentPage={currentPage} onPageChange={handlePageChange} />
     </div>
   );
 };

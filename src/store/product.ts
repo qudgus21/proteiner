@@ -2,10 +2,12 @@ import { create } from "zustand";
 import { Product } from "@/types";
 import { fetchProducts } from "@/api";
 
-const useProductStore = create<{
+interface ProductStoreState {
   products: Product[];
   fetchProducts: (params?: URLSearchParams) => void;
-}>((set) => ({
+}
+
+const useProductStore = create<ProductStoreState>((set) => ({
   products: [],
   fetchProducts: async (params?: URLSearchParams) => {
     try {
