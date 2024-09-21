@@ -44,12 +44,30 @@ const Filters = () => {
     loadInitialData();
   }, []);
 
+  const checkInitialData = (sites: ProductSite[], types: ProductTypeWithOptionalChildren[]) => {
+    const siteIds = sites.map((site: ProductSite) => site.id);
+
+    setSelectedSites(new Set(siteIds));
+
+    const typeSet = new Set<string>();
+    types.forEach((parantType: ProductTypeWithOptionalChildren) => {
+      typeSet.add(parantType.id);
+      if (parantType.children) {
+        parantType.children.forEach((childType) => {
+          typeSet.add(childType.id);
+        });
+      }
+    });
+    setSelectedTypes(typeSet);
+  };
+
   const loadInitialData = async () => {
     setLoading(true);
     try {
       const [sites, types] = await Promise.all([fetchProductSites(), fetchProductTypes()]);
       setProductSites(sites);
       setProductTypes(types);
+      checkInitialData(sites, types);
     } catch (error) {
       console.error("Error loading initial data:", error);
     } finally {
