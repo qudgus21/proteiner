@@ -4,8 +4,7 @@ import { useState, useEffect } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { nutritionColumns } from "@/constants";
 import { ProductTypeWithOptionalChildren, ProductTypeWithChildren, ProductSite } from "@/types";
-import { useProductStore, useLoadingStore } from "@/store";
-import { fetchProductSites, fetchProductTypes } from "@/api";
+import { useLoadingStore, useProductStore } from "@/store";
 
 // 필터 타입 정의
 type FilterType = "site" | "type" | "nutrition100" | "nutritionTotal";
@@ -14,13 +13,10 @@ type FilterType = "site" | "type" | "nutrition100" | "nutritionTotal";
 type NutritionFilterRange = "min" | "max";
 
 const Filters = () => {
+  const { productSites, productTypes, fetchProducts } = useProductStore();
   const { setLoading } = useLoadingStore();
-  const { fetchProducts } = useProductStore();
 
   const [name, setName] = useState("");
-
-  const [productSites, setProductSites] = useState<ProductSite[]>([]);
-  const [productTypes, setProductTypes] = useState<ProductTypeWithOptionalChildren[]>([]);
 
   const [filtersExpanded, setFiltersExpanded] = useState<{
     site: boolean;
@@ -43,16 +39,16 @@ const Filters = () => {
   const [nutrition100gFilters, setNutrition100gFilters] = useState<{ [key: string]: { min: string; max: string } }>({});
 
   useEffect(() => {
-    loadInitialData();
-  }, []);
+    checkInitialData();
+  }, [productSites, productTypes]);
 
-  const checkInitialData = (sites: ProductSite[], types: ProductTypeWithOptionalChildren[]) => {
-    const siteIds = sites.map((site: ProductSite) => site.id);
+  const checkInitialData = () => {
+    const siteIds = productSites.map((site: ProductSite) => site.id);
 
     setSelectedSites(new Set(siteIds));
 
     const typeSet = new Set<string>();
-    types.forEach((parantType: ProductTypeWithOptionalChildren) => {
+    productTypes.forEach((parantType: ProductTypeWithOptionalChildren) => {
       typeSet.add(parantType.id);
       if (parantType.children) {
         parantType.children.forEach((childType) => {
@@ -61,20 +57,6 @@ const Filters = () => {
       }
     });
     setSelectedTypes(typeSet);
-  };
-
-  const loadInitialData = async () => {
-    setLoading(true);
-    try {
-      const [sites, types] = await Promise.all([fetchProductSites(), fetchProductTypes()]);
-      setProductSites(sites);
-      setProductTypes(types);
-      checkInitialData(sites, types);
-    } catch (error) {
-      console.error("Error loading initial data:", error);
-    } finally {
-      setLoading(false);
-    }
   };
 
   // 필터 토글

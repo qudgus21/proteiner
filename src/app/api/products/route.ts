@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 import createHttpError from "http-errors";
+import { Prisma } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { handleError } from "@/utils/errorHandler";
 import { idSchema, ProductCreateSchema, ProductUpdateSchema } from "@/schemas/product";
@@ -52,7 +53,7 @@ export async function GET(request: Request) {
     andItems.push({
       name: {
         contains: nameFilter,
-        mode: "insensitive",
+        mode: Prisma.QueryMode.insensitive,
       },
     });
   }

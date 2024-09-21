@@ -1,12 +1,27 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
-import { useLoadingStore } from "@/store";
+import { useLoadingStore, useProductStore } from "@/store";
 import { LoadingSpinner } from "@/components";
 
 const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { loading } = useLoadingStore();
+  const { loading, setLoading } = useLoadingStore();
+  const { initialize } = useProductStore();
+
+  useEffect(() => {
+    const init = async () => {
+      setLoading(true);
+      try {
+        await initialize();
+      } catch (error) {
+        console.error("Error during initialization:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    init();
+  }, []);
 
   return (
     <section className="flex h-[100vh]">
