@@ -9,6 +9,8 @@ import { nutritionColumns, nutritionMapping } from "@/constants";
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
 
+  const queryIsEmpty = !searchParams.toString();
+
   const siteIds = searchParams.get("sites")?.split(",") || [];
   const typeIds = searchParams.get("types")?.split(",") || [];
 
@@ -43,8 +45,7 @@ export async function GET(request: Request) {
 
   const andItems = [];
 
-  if (siteIds.length > 0) andItems.push({ siteId: { in: siteIds } });
-  if (typeIds.length > 0) andItems.push({ productTypeId: { in: typeIds } });
+  andItems.push({ siteId: { in: siteIds.length > 0 ? siteIds : [] } }, { productTypeId: { in: typeIds.length > 0 ? typeIds : [] } });
 
   // 전체 영양성분 필터 적용
   Object.entries(nutritionTotalFilters).forEach(([key, { min, max }]) => {
@@ -84,7 +85,7 @@ export async function GET(request: Request) {
 
   try {
     const products = await prisma.product.findMany({
-      where: andItems.length > 0 ? { AND: andItems.filter(Boolean) } : {},
+      where: queryIsEmpty ? {} : { AND: andItems.filter(Boolean) },
     });
     return NextResponse.json(products);
   } catch (error) {
