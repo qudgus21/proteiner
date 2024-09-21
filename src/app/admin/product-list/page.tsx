@@ -1,15 +1,15 @@
 import React from "react";
 import Filters from "./components/Filters";
-import ProductsList from "./components/ProductsList";
+import List from "./components/List";
 
-const ProductsPage: React.FC = () => {
+const ProductListPage: React.FC = () => {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-4">상품 리스트</h1>
       <Filters />
-      <ProductsList />
+      <List />
     </div>
   );
 };
 
-export default ProductsPage;
+export default ProductListPage;

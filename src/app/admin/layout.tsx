@@ -14,7 +14,7 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         <nav className="p-4">
           <ul className="menu font-bold text-[15px] gap-[10px]">
             <li>
-              <Link href="/admin/products" className="menu-item">
+              <Link href="/admin/product-list" className="menu-item">
                 상품 목록
               </Link>
             </li>

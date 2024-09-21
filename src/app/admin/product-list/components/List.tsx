@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useProductStore } from "@/store";
 import { Pagination } from "@/components";
 
-const ProductsList = () => {
+const List = () => {
   const { products, fetchProducts } = useProductStore();
   const [currentPage, setCurrentPage] = useState(1);
 
@@ -64,4 +64,4 @@ const ProductsList = () => {
   );
 };
 
-export default ProductsList;
+export default List;
