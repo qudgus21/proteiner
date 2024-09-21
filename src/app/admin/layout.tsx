@@ -10,22 +10,22 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   return (
     <section className="flex h-[100vh]">
-      <div className={`w-64 bg-blue-300 text-white block lg:block min-w-[210px]`}>
+      <div className={`w-64 bg-blue-400 text-white block lg:block min-w-[210px]`}>
         <nav className="p-4">
           <ul className="menu font-bold text-[15px] gap-[10px]">
             <li>
-              <Link href="/admin/add-product" className="menu-item">
-                상품 등록 페이지
+              <Link href="/admin/products" className="menu-item">
+                상품 목록
               </Link>
             </li>
             <li>
-              <Link href="/admin/products" className="menu-item">
-                상품 리스트 페이지
+              <Link href="/admin/add-product" className="menu-item">
+                상품 등록
               </Link>
             </li>
             <li>
               <Link href="/admin/spreadsheet" className="menu-item">
-                스프레드시트 페이지
+                스프레드시트
               </Link>
             </li>
           </ul>
