@@ -4,7 +4,7 @@ import createHttpError from "http-errors";
 import prisma from "@/lib/prisma";
 import { handleError } from "@/utils/errorHandler";
 import { idSchema, ProductCreateSchema, ProductUpdateSchema } from "@/schemas/product";
-import { nutritionColumns } from "@/constants";
+import { nutritionColumns, nutritionMapping } from "@/constants";
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
@@ -16,7 +16,7 @@ export async function GET(request: Request) {
   const nutrition100gFilters: { [key: string]: { min?: number; max?: number } } = {};
 
   // 전체 영양성분 필터 파싱
-  Object.keys(nutritionColumns).forEach((key) => {
+  nutritionColumns.forEach((key: (typeof nutritionColumns)[number]) => {
     const minKey = `nutritionTotal_${key}_min`;
     const maxKey = `nutritionTotal_${key}_max`;
 
@@ -24,12 +24,12 @@ export async function GET(request: Request) {
     const max = searchParams.get(maxKey);
 
     if (min || max) {
-      nutritionTotalFilters[key] = { min: min ? Number(min) : undefined, max: max ? Number(max) : undefined };
+      nutritionTotalFilters[nutritionMapping[key]] = { min: min ? Number(min) : undefined, max: max ? Number(max) : undefined };
     }
   });
 
-  // 100g 영양성분 필터 파싱
-  Object.keys(nutritionColumns).forEach((key) => {
+  //100g 영양성분 필터 파싱
+  nutritionColumns.forEach((key: (typeof nutritionColumns)[number]) => {
     const minKey = `nutrition100_${key}_min`;
     const maxKey = `nutrition100_${key}_max`;
 
@@ -37,7 +37,7 @@ export async function GET(request: Request) {
     const max = searchParams.get(maxKey);
 
     if (min || max) {
-      nutrition100gFilters[key] = { min: min ? Number(min) : undefined, max: max ? Number(max) : undefined };
+      nutrition100gFilters[nutritionMapping[key]] = { min: min ? Number(min) : undefined, max: max ? Number(max) : undefined };
     }
   });
 
@@ -46,24 +46,41 @@ export async function GET(request: Request) {
   if (siteIds.length > 0) andItems.push({ siteId: { in: siteIds } });
   if (typeIds.length > 0) andItems.push({ productTypeId: { in: typeIds } });
 
-  // [
-  //   { siteId: { in: siteIds } },
-  //   { productTypeId: { in: typeIds } },
-  //   //Nutrition total filters
-  //   ...Object.entries(nutritionTotalFilters).flatMap(([key, { min, max }]) => {
-  //     const conditions = [];
-  //     if (min !== undefined) conditions.push({ [key]: { gte: min } });
-  //     if (max !== undefined) conditions.push({ [key]: { lte: max } });
-  //     return conditions.length > 0 ? { OR: conditions } : [];
-  //   }),
-  //   // Nutrition 100g filters
-  //   ...Object.entries(nutrition100gFilters).flatMap(([key, { min, max }]) => {
-  //     const conditions = [];
-  //     if (min !== undefined) conditions.push({ pricePer100g: { gte: min } });
-  //     if (max !== undefined) conditions.push({ pricePer100g: { lte: max } });
-  //     return conditions.length > 0 ? { OR: conditions } : [];
-  //   }),
-  // ]
+  // 전체 영양성분 필터 적용
+  Object.entries(nutritionTotalFilters).forEach(([key, { min, max }]) => {
+    if (min !== undefined) {
+      andItems.push({
+        nutritionTotal: {
+          [key]: { gte: min },
+        },
+      });
+    }
+    if (max !== undefined) {
+      andItems.push({
+        nutritionTotal: {
+          [key]: { lte: max },
+        },
+      });
+    }
+  });
+
+  // 100g당 영양성분 필터 적용
+  Object.entries(nutrition100gFilters).forEach(([key, { min, max }]) => {
+    if (min !== undefined) {
+      andItems.push({
+        nutrition100g: {
+          [key]: { gte: min },
+        },
+      });
+    }
+    if (max !== undefined) {
+      andItems.push({
+        nutrition100g: {
+          [key]: { lte: max },
+        },
+      });
+    }
+  });
 
   try {
     const products = await prisma.product.findMany({
@@ -71,9 +88,6 @@ export async function GET(request: Request) {
         AND: andItems.filter(Boolean),
       },
     });
-
-    console.log(products, "products");
-
     return NextResponse.json(products);
   } catch (error) {
     console.error("Error fetching products with filters:", error);
