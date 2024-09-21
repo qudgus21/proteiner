@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
-import useProductStore from "@/store/product";
+import { useProductStore } from "@/store";
 
 const ProductsList = () => {
   const products = useProductStore((state) => state.products);

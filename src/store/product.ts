@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import { Product } from "@/types/product";
-import { fetchProducts } from "@/api/product";
+import { Product } from "@/types";
+import { fetchProducts } from "@/api";
 
 const useProductStore = create<{
   products: Product[];

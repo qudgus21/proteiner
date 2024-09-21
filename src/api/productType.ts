@@ -1,6 +1,5 @@
 import axios from "axios";
-import { ProductSite } from "@/types/productSite";
-import { ProductTypeWithOptionalChildren } from "@/types/productType";
+import { ProductTypeWithOptionalChildren } from "@/types";
 
 export const fetchProductTypes = async (): Promise<ProductTypeWithOptionalChildren[]> => {
   try {

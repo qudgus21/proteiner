@@ -1,4 +1,5 @@
-import { Product } from "@/types/product";
+import { Product } from "@/types";
+
 import axios from "axios";
 
 export const fetchProducts = async (params?: URLSearchParams): Promise<Product[]> => {

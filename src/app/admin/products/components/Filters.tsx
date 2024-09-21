@@ -2,14 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
-import axios from "axios";
 import { nutritionColumns } from "@/constants";
-import { ProductSite } from "@/types/productSite";
-import { ProductTypeWithOptionalChildren, ProductTypeWithChildren, ProductType } from "@/types/productType";
-import useProductStore from "@/store/product";
-import useLoadingStore from "@/store/loading";
-import { fetchProductSites } from "@/api/productSite";
-import { fetchProductTypes } from "@/api/productType";
+import { ProductTypeWithOptionalChildren, ProductTypeWithChildren, ProductSite } from "@/types";
+import { useProductStore, useLoadingStore } from "@/store";
+import { fetchProductSites, fetchProductTypes } from "@/api";
 
 // 필터 타입 정의
 type FilterType = "site" | "type" | "nutrition100" | "nutritionTotal";
