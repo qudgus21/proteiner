@@ -195,6 +195,7 @@ const Filters = () => {
     setSelectedTypes(new Set());
     setNutritionTotalFilters({});
     setNutrition100gFilters({});
+    setName("");
   };
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
