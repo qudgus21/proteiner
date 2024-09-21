@@ -84,9 +84,7 @@ export async function GET(request: Request) {
 
   try {
     const products = await prisma.product.findMany({
-      where: {
-        AND: andItems.filter(Boolean),
-      },
+      where: andItems.length > 0 ? { AND: andItems.filter(Boolean) } : {},
     });
     return NextResponse.json(products);
   } catch (error) {

@@ -1,7 +1,13 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
+import useLoadingStore from "@/store/loading";
+import LoadingSpinner from "@/components/LoadingSpinner";
 
 const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { loading } = useLoadingStore();
+
   return (
     <section className="flex h-[100vh]">
       <div className={`w-64 bg-blue-300 text-white block lg:block min-w-[210px]`}>
@@ -26,7 +32,14 @@ const AdminLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         </nav>
       </div>
 
-      <div className="flex-1 p-6 h-[100vh] overflow-y-scroll">{children}</div>
+      <div className="flex-1 p-6 h-[100vh] overflow-y-scroll">
+        {loading && (
+          <div className="absolute inset-0 flex justify-center items-center z-50">
+            <LoadingSpinner />
+          </div>
+        )}
+        {children}
+      </div>
     </section>
   );
 };

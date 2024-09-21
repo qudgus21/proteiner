@@ -1,2 +1,12 @@
-export {};
-//api콜은 하나로 합시다 네...
+import { Product } from "@/types/product";
+import axios from "axios";
+
+export const fetchProducts = async (params?: URLSearchParams): Promise<Product[]> => {
+  try {
+    const response = await axios.get("/api/products", { params });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching products:", error);
+    throw new Error("데이터를 가져오는 중 오류가 발생했습니다.");
+  }
+};

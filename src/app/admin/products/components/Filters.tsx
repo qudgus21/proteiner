@@ -6,6 +6,10 @@ import axios from "axios";
 import { nutritionColumns } from "@/constants";
 import { ProductSite } from "@/types/productSite";
 import { ProductTypeWithOptionalChildren, ProductTypeWithChildren, ProductType } from "@/types/productType";
+import useProductStore from "@/store/product";
+import useLoadingStore from "@/store/loading";
+import { fetchProductSites } from "@/api/productSite";
+import { fetchProductTypes } from "@/api/productType";
 
 // 필터 타입 정의
 type FilterType = "site" | "type" | "nutrition100" | "nutritionTotal";
@@ -14,6 +18,9 @@ type FilterType = "site" | "type" | "nutrition100" | "nutritionTotal";
 type NutritionFilterRange = "min" | "max";
 
 const Filters = () => {
+  const { setLoading } = useLoadingStore();
+  const { fetchProducts } = useProductStore();
+
   const [productSites, setProductSites] = useState<ProductSite[]>([]);
   const [productTypes, setProductTypes] = useState<ProductTypeWithOptionalChildren[]>([]);
 
@@ -38,43 +45,19 @@ const Filters = () => {
   const [nutrition100gFilters, setNutrition100gFilters] = useState<{ [key: string]: { min: string; max: string } }>({});
 
   useEffect(() => {
-    fetchProductSites();
-    fetchProductTypes();
+    loadInitialData();
   }, []);
 
-  const fetchProductSites = async () => {
+  const loadInitialData = async () => {
+    setLoading(true);
     try {
-      const response = await axios.get("/api/product-sites");
-      const sites = response.data;
-      const siteIds = sites.map((site: ProductType) => site.id);
-
+      const [sites, types] = await Promise.all([fetchProductSites(), fetchProductTypes()]);
       setProductSites(sites);
-      setSelectedSites(new Set(siteIds));
-    } catch (error) {
-      console.log("Error fetching product sites:", error);
-    }
-  };
-
-  const fetchProductTypes = async () => {
-    try {
-      const response = await axios.get("/api/product-types");
-      const types = response.data;
-
       setProductTypes(types);
-
-      const typeSet = new Set<string>();
-
-      types.forEach((parantType: ProductTypeWithChildren) => {
-        typeSet.add(parantType.id);
-
-        parantType.children.forEach((childType) => {
-          typeSet.add(childType.id);
-        });
-      });
-
-      setSelectedTypes(typeSet);
     } catch (error) {
-      console.log("Error fetching product types:", error);
+      console.error("Error loading initial data:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -192,14 +175,15 @@ const Filters = () => {
   };
 
   const handleFetchBtnClick = async () => {
-    try {
-      const params = buildQueryParams();
+    const params: URLSearchParams = buildQueryParams();
 
-      const response = await axios.get("/api/products", { params });
-      return response.data;
+    setLoading(true);
+    try {
+      await fetchProducts(params);
     } catch (error) {
-      console.error("Error fetching filtered products:", error);
-      throw error;
+      console.error("Error loading product data:", error);
+    } finally {
+      setLoading(false);
     }
   };
 

@@ -1,23 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import axios from "axios";
+import { useEffect } from "react";
+import useProductStore from "@/store/product";
 
 const ProductsList = () => {
-  const [products, setProducts] = useState<any[]>([]);
+  const products = useProductStore((state) => state.products);
+  const fetchProducts = useProductStore((state) => state.fetchProducts);
 
   useEffect(() => {
     fetchProducts();
   }, []);
-
-  const fetchProducts = async () => {
-    try {
-      const response = await axios.get("/api/products");
-      setProducts(response.data);
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    }
-  };
 
   return (
     <div className="card bg-base-100 shadow-xl">
