@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useProductStore } from "@/stores";
 import { Pagination } from "@/components";
@@ -36,7 +37,9 @@ const List = () => {
           <tbody>
             {paginatedProducts.map((product) => (
               <tr key={product.id}>
-                <td>{product.name}</td>
+                <td>
+                  <Link href={`/admin/product/${product.id}`}>{product.name}</Link>
+                </td>
                 <td>{product.price}</td>
                 <td>{product.pricePer100g ?? "N/A"}</td>
                 <td>
