@@ -1,7 +1,7 @@
 import axios from "axios";
-import { ProductTypeWithOptionalChildren } from "@/types";
+import { ProductTypeWithChildren } from "@/types";
 
-export const fetchProductTypes = async (): Promise<ProductTypeWithOptionalChildren[]> => {
+export const fetchProductTypes = async (): Promise<ProductTypeWithChildren[]> => {
   try {
     const response = await axios.get("/api/product-types");
     return response.data;

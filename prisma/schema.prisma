@@ -34,30 +34,30 @@ model Product {
 
 model ProductNutrition100g {
   id               String    @id @default(uuid())  // UUID 사용
-  calories         Float
-  carbohydrates    Float
-  sugars           Float
-  protein          Float
-  fat              Float
-  saturatedFat     Float
-  transFat         Float
-  cholesterol      Float
-  sodium           Float
+  calories         Float?
+  carbohydrates    Float?
+  sugars           Float?
+  protein          Float?
+  fat              Float?
+  saturatedFat     Float?
+  transFat         Float?
+  cholesterol      Float?
+  sodium           Float?
 
   product          Product? @relation("ProductToNutrition100g")
 }
 
 model ProductNutritionTotal {
   id               String    @id @default(uuid())  // UUID 사용
-  calories         Float
-  carbohydrates    Float
-  sugars           Float
-  protein          Float
-  fat              Float
-  saturatedFat     Float
-  transFat         Float
-  cholesterol      Float
-  sodium           Float
+  calories         Float?
+  carbohydrates    Float?
+  sugars           Float?
+  protein          Float?
+  fat              Float?
+  saturatedFat     Float?
+  transFat         Float?
+  cholesterol      Float?
+  sodium           Float?
 
   product          Product? @relation("ProductToNutritionTotal")
 }

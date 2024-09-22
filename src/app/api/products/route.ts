@@ -108,18 +108,48 @@ export async function GET(request: Request) {
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const parsedBody = ProductCreateSchema.parse(body);
+    const parsedBody: any = ProductCreateSchema.parse(body);
 
+    // 100g 영양정보를 생성
+    const nutrition100g = await prisma.productNutrition100g.create({
+      data: {
+        id: uuidv4(),
+        ...parsedBody.nutrition100g,
+      },
+    });
+
+    // 전체 영양정보가 있는 경우 생성
+    let nutritionTotal;
+    if (parsedBody.nutritionTotal) {
+      nutritionTotal = await prisma.productNutritionTotal.create({
+        data: {
+          id: uuidv4(),
+          ...parsedBody.nutritionTotal,
+        },
+      });
+    }
+
+    // 상품 생성
     const newProduct = await prisma.product.create({
       data: {
         id: uuidv4(),
-        ...parsedBody,
+        name: parsedBody.name,
+        price: parsedBody.price,
+        pricePer100g: parsedBody.pricePer100g,
+        productUrl: parsedBody.productUrl,
+        affiliateUrl: parsedBody.affiliateUrl,
+        imageUrl: parsedBody.imageUrl,
+        productTypeId: parsedBody.productTypeId,
+        siteId: parsedBody.siteId,
+        nutrition100gId: nutrition100g.id,
+        nutritionTotalId: nutritionTotal ? nutritionTotal.id : null,
       },
     });
 
     return NextResponse.json(newProduct, { status: 201 });
   } catch (error) {
-    return handleError(error);
+    console.error("Error creating product:", error);
+    return NextResponse.json({ error: "Failed to create product" }, { status: 400 });
   }
 }
 

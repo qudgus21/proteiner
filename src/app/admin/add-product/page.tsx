@@ -1,11 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { nutritionColumns, nutritionMapping } from "@/constants";
 import { useProductStore } from "@/stores";
 
 const AddProductPage: React.FC = () => {
+  const { productSites, childProductTypes } = useProductStore();
+
+  const [selectedSiteId, setSelectedSiteId] = useState<string>();
+  const [selectedTypeId, setSelectedTypeId] = useState<string>();
+
   const [name, setName] = useState<string>("");
   const [price, setPrice] = useState<number>();
   const [pricePer100g, setPricePer100g] = useState<number>();
@@ -22,6 +27,22 @@ const AddProductPage: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
+    const filteredNutrition100g = nutritionColumns.reduce((acc, col) => {
+      const value = nutrition100g[col];
+      if (value) {
+        acc[nutritionMapping[col]] = Number(value); // 빈 값이 아닐 경우에만 추가
+      }
+      return acc;
+    }, {} as Record<string, number>);
+
+    const filteredNutritionTotal = nutritionColumns.reduce((acc, col) => {
+      const value = nutritionTotal[col];
+      if (value) {
+        acc[nutritionMapping[col]] = Number(value); // 빈 값이 아닐 경우에만 추가
+      }
+      return acc;
+    }, {} as Record<string, number>);
+
     try {
       await axios.post("/api/products", {
         name,
@@ -29,9 +50,11 @@ const AddProductPage: React.FC = () => {
         pricePer100g,
         productUrl,
         affiliateUrl,
+        productTypeId: selectedTypeId,
+        siteId: selectedSiteId,
         imageUrl,
-        nutrition100g: Object.fromEntries(nutritionColumns.map((col) => [nutritionMapping[col], parseFloat(nutrition100g[col])])),
-        nutritionTotal: Object.fromEntries(nutritionColumns.map((col) => [nutritionMapping[col], parseFloat(nutritionTotal[col])])),
+        nutrition100g: filteredNutrition100g,
+        nutritionTotal: filteredNutritionTotal,
       });
     } catch (error) {
       console.error("Error submitting product:", error);
@@ -45,14 +68,14 @@ const AddProductPage: React.FC = () => {
         <div className="card-body">
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* 사이트 선택 */}
-            {/* <div>
+            <div>
               <label htmlFor="productSite" className="label">
                 <span className="label-text">사이트 선택</span>
               </label>
               <select
                 id="productSite"
-                value={selectedSite}
-                onChange={(e) => setSelectedSite(e.target.value)}
+                value={selectedSiteId}
+                onChange={(e) => setSelectedSiteId(e.target.value)}
                 required
                 className="select select-bordered w-full"
               >
@@ -63,28 +86,29 @@ const AddProductPage: React.FC = () => {
                   </option>
                 ))}
               </select>
-            </div> */}
+            </div>
 
             {/* 타입 선택 (자식 타입만) */}
-            {/* <div>
+            <div>
               <label htmlFor="productType" className="label">
-                <span className="label-text">타입 선택 (자식만)</span>
+                <span className="label-text">타입 선택</span>
               </label>
               <select
                 id="productType"
-                value={selectedType}
-                onChange={(e) => setSelectedType(e.target.value)}
+                value={selectedTypeId}
+                onChange={(e) => setSelectedTypeId(e.target.value)}
                 required
                 className="select select-bordered w-full"
               >
                 <option value="">타입을 선택하세요</option>
-                {filteredTypes.map((type: any) => (
+
+                {childProductTypes.map((type: any) => (
                   <option key={type.id} value={type.id}>
                     {type.name}
                   </option>
                 ))}
               </select>
-            </div> */}
+            </div>
 
             <div>
               <label htmlFor="name" className="label">

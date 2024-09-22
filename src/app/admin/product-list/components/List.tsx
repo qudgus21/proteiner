@@ -5,11 +5,11 @@ import { useProductStore } from "@/stores";
 import { Pagination } from "@/components";
 
 const List = () => {
-  const { products, fetchProducts } = useProductStore();
+  const { products, getProducts } = useProductStore();
   const [currentPage, setCurrentPage] = useState(1);
 
   useEffect(() => {
-    fetchProducts();
+    getProducts();
   }, []);
 
   const handlePageChange = (page: number) => {

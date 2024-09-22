@@ -1,4 +1,6 @@
 import { z } from "zod";
+import { ProductNutrition100gCreateSchema } from "./productNutrition100g";
+import { ProductNutritionTotalCreateSchema } from "./productNutritionTotal";
 
 // ID 검증
 export const idSchema = z.string().uuid("Invalid UUID format");
@@ -9,13 +11,13 @@ export const ProductCreateSchema = z
     name: z.string().min(1, "Name is required"),
     price: z.number().int().positive("Price must be a positive integer"),
     pricePer100g: z.number().int().positive().optional(),
-    productUrl: z.string().url("Invalid URL format"),
-    affiliateUrl: z.string().url("Invalid URL format").optional(),
-    imageUrl: z.string().url("Invalid URL format").optional(),
+    productUrl: z.string(),
+    affiliateUrl: z.string().optional(),
+    imageUrl: z.string().optional(),
     productTypeId: idSchema,
     siteId: idSchema,
-    nutrition100gId: idSchema.optional(),
-    nutritionTotalId: idSchema.optional(),
+    nutrition100g: ProductNutrition100gCreateSchema.optional(),
+    nutritionTotal: ProductNutritionTotalCreateSchema.optional(),
   })
   .strict();
 
@@ -26,9 +28,9 @@ export const ProductUpdateSchema = z
     name: z.string().min(1, "Name is required").optional(),
     price: z.number().int().positive("Price must be a positive integer").optional(),
     pricePer100g: z.number().int().positive().optional(),
-    productUrl: z.string().url("Invalid URL format").optional(),
-    affiliateUrl: z.string().url("Invalid URL format").optional(),
-    imageUrl: z.string().url("Invalid URL format").optional(),
+    productUrl: z.string().optional(),
+    affiliateUrl: z.string().optional(),
+    imageUrl: z.string().optional(),
     productTypeId: idSchema.optional(),
     siteId: idSchema.optional(),
     nutrition100gId: idSchema.optional(),
