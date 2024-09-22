@@ -1,15 +1,20 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import axios from "axios";
+import { useRouter } from "next/router";
+import React, { useState } from "react";
 import { nutritionColumns, nutritionMapping } from "@/constants";
-import { useProductStore } from "@/stores";
+import { useProductStore, useLoadingStore } from "@/stores";
+import { createProduct } from "@/api";
 
-const AddProductPage: React.FC = () => {
+const ProductAddPage: React.FC = () => {
+  // todo: 오류잡기
+  // const router = useRouter();
+
   const { productSites, childProductTypes } = useProductStore();
+  const { setLoading } = useLoadingStore();
 
-  const [selectedSiteId, setSelectedSiteId] = useState<string>();
-  const [selectedTypeId, setSelectedTypeId] = useState<string>();
+  const [selectedSiteId, setSelectedSiteId] = useState<string>("");
+  const [selectedTypeId, setSelectedTypeId] = useState<string>("");
 
   const [name, setName] = useState<string>("");
   const [price, setPrice] = useState<number>();
@@ -44,9 +49,11 @@ const AddProductPage: React.FC = () => {
     }, {} as Record<string, number>);
 
     try {
-      await axios.post("/api/products", {
+      setLoading(true);
+
+      const createdProduct = await createProduct({
         name,
-        price,
+        price: Number(price),
         pricePer100g,
         productUrl,
         affiliateUrl,
@@ -56,8 +63,13 @@ const AddProductPage: React.FC = () => {
         nutrition100g: filteredNutrition100g,
         nutritionTotal: filteredNutritionTotal,
       });
+
+      window.location.href = `/admin/product/${createdProduct.id}`;
+      // router.push(`/admin/products/${createdProduct.id}`);
     } catch (error) {
       console.error("Error submitting product:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -123,7 +135,7 @@ const AddProductPage: React.FC = () => {
               <input
                 id="price"
                 type="number"
-                min="0"
+                min="1"
                 value={price}
                 onChange={(e) => setPrice(Number(e.target.value))}
                 required
@@ -254,4 +266,4 @@ const AddProductPage: React.FC = () => {
   );
 };
 
-export default AddProductPage;
+export default ProductAddPage;

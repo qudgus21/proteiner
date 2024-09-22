@@ -1,7 +1,10 @@
+"use client";
+
 import { useEffect } from "react";
-// import { useRouter } from "next/router";
+import { useRouter } from "next/router";
 
 const ProductDetailPage = () => {
+  // todo: router 에러
   // const router = useRouter();
   // const { id } = router.query;
   // const [product, setProduct] = useState(null);
