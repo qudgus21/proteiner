@@ -1,5 +1,5 @@
-import { fetchProducts, createProduct } from "./product";
-import { fetchProductSites } from "./productSite";
-import { fetchProductTypes } from "./productType";
+import { getProduct, getProducts, createProduct } from "./product";
+import { getProductSites } from "./productSite";
+import { getProductTypes } from "./productType";
 
-export { fetchProductSites, fetchProducts, fetchProductTypes, createProduct };
+export { getProduct, getProducts, createProduct, getProductSites, getProductTypes };

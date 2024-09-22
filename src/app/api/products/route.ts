@@ -7,96 +7,135 @@ import { handleError } from "@/utils/errorHandler";
 import { idSchema, ProductCreateSchema, ProductUpdateSchema } from "@/schemas/product";
 import { nutritionColumns, nutritionMapping } from "@/constants";
 
+type NutritionFilter = {
+  min?: number;
+  max?: number;
+};
+
+type Filters = {
+  siteIds: string[];
+  typeIds: string[];
+  nameFilter: string;
+  nutritionTotalFilters: { [key: string]: NutritionFilter };
+  nutrition100gFilters: { [key: string]: NutritionFilter };
+};
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
+  const productId = searchParams.get("id");
 
-  const queryIsEmpty = !searchParams.toString();
-
-  const siteIds = searchParams.get("sites")?.split(",") || [];
-  const typeIds = searchParams.get("types")?.split(",") || [];
-  const nameFilter = searchParams.get("name") || "";
-
-  const nutritionTotalFilters: { [key: string]: { min?: number; max?: number } } = {};
-  const nutrition100gFilters: { [key: string]: { min?: number; max?: number } } = {};
-
-  // 전체 영양성분 필터 파싱
-  nutritionColumns.forEach((key: (typeof nutritionColumns)[number]) => {
-    const minKey = `nutritionTotal_${key}_min`;
-    const maxKey = `nutritionTotal_${key}_max`;
-
-    const min = searchParams.get(minKey);
-    const max = searchParams.get(maxKey);
-
-    if (min || max) {
-      nutritionTotalFilters[nutritionMapping[key]] = { min: min ? Number(min) : undefined, max: max ? Number(max) : undefined };
+  // 단일 상품 조회 함수
+  const fetchProductById = async (id: string) => {
+    try {
+      const product = await prisma.product.findUnique({
+        where: { id },
+      });
+      if (!product) {
+        return NextResponse.json({ error: "Product not found" }, { status: 404 });
+      }
+      return NextResponse.json(product);
+    } catch (error) {
+      console.error("Error fetching product:", error);
+      return NextResponse.json({ error: "Error fetching product" }, { status: 500 });
     }
-  });
+  };
 
-  //100g 영양성분 필터 파싱
-  nutritionColumns.forEach((key: (typeof nutritionColumns)[number]) => {
-    const minKey = `nutrition100_${key}_min`;
-    const maxKey = `nutrition100_${key}_max`;
+  // 필터 파싱 함수
+  const parseFilters = () => {
+    const siteIds = searchParams.get("sites")?.split(",") || [];
+    const typeIds = searchParams.get("types")?.split(",") || [];
+    const nameFilter = searchParams.get("name") || "";
 
-    const min = searchParams.get(minKey);
-    const max = searchParams.get(maxKey);
+    const nutritionTotalFilters: { [key: string]: { min?: number; max?: number } } = {};
+    const nutrition100gFilters: { [key: string]: { min?: number; max?: number } } = {};
 
-    if (min || max) {
-      nutrition100gFilters[nutritionMapping[key]] = { min: min ? Number(min) : undefined, max: max ? Number(max) : undefined };
-    }
-  });
+    // 전체 영양성분 필터 파싱
+    nutritionColumns.forEach((key) => {
+      const minKey = `nutritionTotal_${key}_min`;
+      const maxKey = `nutritionTotal_${key}_max`;
 
-  const andItems = [];
+      const min = searchParams.get(minKey);
+      const max = searchParams.get(maxKey);
 
-  andItems.push({ siteId: { in: siteIds.length > 0 ? siteIds : [] } }, { productTypeId: { in: typeIds.length > 0 ? typeIds : [] } });
-
-  if (nameFilter) {
-    andItems.push({
-      name: {
-        contains: nameFilter,
-        mode: Prisma.QueryMode.insensitive,
-      },
+      if (min || max) {
+        nutritionTotalFilters[nutritionMapping[key]] = {
+          min: min ? Number(min) : undefined,
+          max: max ? Number(max) : undefined,
+        };
+      }
     });
+
+    // 100g 영양성분 필터 파싱
+    nutritionColumns.forEach((key) => {
+      const minKey = `nutrition100_${key}_min`;
+      const maxKey = `nutrition100_${key}_max`;
+
+      const min = searchParams.get(minKey);
+      const max = searchParams.get(maxKey);
+
+      if (min || max) {
+        nutrition100gFilters[nutritionMapping[key]] = {
+          min: min ? Number(min) : undefined,
+          max: max ? Number(max) : undefined,
+        };
+      }
+    });
+
+    return { siteIds, typeIds, nameFilter, nutritionTotalFilters, nutrition100gFilters };
+  };
+
+  // 필터 적용 함수
+  const applyFilters = (filters: Filters) => {
+    const andItems = [];
+    const { siteIds, typeIds, nameFilter, nutritionTotalFilters, nutrition100gFilters } = filters;
+
+    andItems.push({ siteId: { in: siteIds.length > 0 ? siteIds : [] } }, { productTypeId: { in: typeIds.length > 0 ? typeIds : [] } });
+
+    if (nameFilter) {
+      andItems.push({
+        name: {
+          contains: nameFilter,
+          mode: Prisma.QueryMode.insensitive,
+        },
+      });
+    }
+
+    // 전체 영양성분 필터 적용
+    Object.entries(nutritionTotalFilters).forEach(([key, { min, max }]) => {
+      if (min !== undefined) {
+        andItems.push({ nutritionTotal: { [key]: { gte: min } } });
+      }
+      if (max !== undefined) {
+        andItems.push({ nutritionTotal: { [key]: { lte: max } } });
+      }
+    });
+
+    // 100g당 영양성분 필터 적용
+    Object.entries(nutrition100gFilters).forEach(([key, { min, max }]) => {
+      if (min !== undefined) {
+        andItems.push({ nutrition100g: { [key]: { gte: min } } });
+      }
+      if (max !== undefined) {
+        andItems.push({ nutrition100g: { [key]: { lte: max } } });
+      }
+    });
+
+    return andItems.filter(Boolean);
+  };
+
+  // ID가 있는 경우 단일 상품 조회
+  if (productId) {
+    return fetchProductById(productId);
   }
 
-  // 전체 영양성분 필터 적용
-  Object.entries(nutritionTotalFilters).forEach(([key, { min, max }]) => {
-    if (min !== undefined) {
-      andItems.push({
-        nutritionTotal: {
-          [key]: { gte: min },
-        },
-      });
-    }
-    if (max !== undefined) {
-      andItems.push({
-        nutritionTotal: {
-          [key]: { lte: max },
-        },
-      });
-    }
-  });
-
-  // 100g당 영양성분 필터 적용
-  Object.entries(nutrition100gFilters).forEach(([key, { min, max }]) => {
-    if (min !== undefined) {
-      andItems.push({
-        nutrition100g: {
-          [key]: { gte: min },
-        },
-      });
-    }
-    if (max !== undefined) {
-      andItems.push({
-        nutrition100g: {
-          [key]: { lte: max },
-        },
-      });
-    }
-  });
+  // ID가 없는 경우 필터 파싱 및 적용
+  const filters = parseFilters();
+  const andItems = applyFilters(filters);
+  const queryIsEmpty = !searchParams.toString();
 
   try {
     const products = await prisma.product.findMany({
-      where: queryIsEmpty ? {} : { AND: andItems.filter(Boolean) },
+      where: queryIsEmpty ? {} : { AND: andItems },
     });
     return NextResponse.json(products);
   } catch (error) {

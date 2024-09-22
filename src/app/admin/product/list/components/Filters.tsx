@@ -13,7 +13,7 @@ type FilterType = "site" | "type" | "nutrition100" | "nutritionTotal";
 type NutritionFilterRange = "min" | "max";
 
 const Filters = () => {
-  const { productSites, productTypes, getProducts } = useProductStore();
+  const { productSites, productTypes, fetchProducts } = useProductStore();
   const { setLoading } = useLoadingStore();
 
   const [name, setName] = useState("");
@@ -182,7 +182,7 @@ const Filters = () => {
 
     setLoading(true);
     try {
-      await getProducts(params);
+      await fetchProducts(params);
     } catch (error) {
       console.error("Error loading product data:", error);
     } finally {

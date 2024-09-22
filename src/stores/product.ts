@@ -1,15 +1,15 @@
 import { create } from "zustand";
 import { Product, ProductSite, ProductTypeWithChildren, ProductTypeWithOptionalChildren } from "@/types";
-import { fetchProducts, fetchProductSites, fetchProductTypes } from "@/api";
+import { getProducts, getProductSites, getProductTypes } from "@/api";
 
 interface ProductStoreState {
   products: Product[];
   productSites: ProductSite[];
   productTypes: ProductTypeWithChildren[];
   childProductTypes: ProductTypeWithOptionalChildren[];
-  getProducts: (params?: URLSearchParams) => void;
-  getProductSites: () => void;
-  getProductTypes: () => void;
+  fetchProducts: (params?: URLSearchParams) => void;
+  fetchProductSites: () => void;
+  fetchProductTypes: () => void;
   setChildProductTypes: (productTypes: ProductTypeWithChildren[]) => void;
   initialize: () => Promise<void>;
 }
@@ -19,25 +19,25 @@ const useProductStore = create<ProductStoreState>((set, get) => ({
   productSites: [],
   productTypes: [],
   childProductTypes: [],
-  getProducts: async (params?: URLSearchParams) => {
+  fetchProducts: async (params?: URLSearchParams) => {
     try {
-      const products = await fetchProducts(params);
+      const products = await getProducts(params);
       set({ products });
     } catch (error) {
       console.error("Error fetching products:", error);
     }
   },
-  getProductSites: async () => {
+  fetchProductSites: async () => {
     try {
-      const productSites = await fetchProductSites();
+      const productSites = await getProductSites();
       set({ productSites });
     } catch (error) {
       console.error("Error fetching product sites:", error);
     }
   },
-  getProductTypes: async () => {
+  fetchProductTypes: async () => {
     try {
-      const productTypes = await fetchProductTypes();
+      const productTypes = await getProductTypes();
       set({ productTypes });
 
       get().setChildProductTypes(productTypes);
@@ -61,7 +61,7 @@ const useProductStore = create<ProductStoreState>((set, get) => ({
   },
   initialize: async () => {
     try {
-      await Promise.all([get().getProductSites(), get().getProductTypes()]);
+      await Promise.all([get().fetchProductSites(), get().fetchProductTypes()]);
     } catch (error) {
       console.error("Error during initialization:", error);
     }
