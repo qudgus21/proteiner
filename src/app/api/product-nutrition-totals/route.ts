@@ -38,21 +38,12 @@ export async function POST(request: Request) {
 export async function PATCH(request: Request) {
   try {
     const body = await request.json();
+
     const parsedBody = ProductNutritionTotalUpdateSchema.parse(body);
 
     const updatedProductNutritionTotal = await prisma.productNutritionTotal.update({
       where: { id: parsedBody.id },
-      data: {
-        calories: parsedBody.calories,
-        carbohydrates: parsedBody.carbohydrates,
-        sugars: parsedBody.sugars,
-        protein: parsedBody.protein,
-        fat: parsedBody.fat,
-        saturatedFat: parsedBody.saturatedFat,
-        transFat: parsedBody.transFat,
-        cholesterol: parsedBody.cholesterol,
-        sodium: parsedBody.sodium,
-      },
+      data: parsedBody,
     });
 
     return NextResponse.json(updatedProductNutritionTotal);

@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { getProduct, updateProduct } from "@/api";
+import { getProduct, updateNutrition100g, updateNutritionTotal, updateProduct } from "@/api";
 import { ProductIncludeNutrition } from "@/types";
 import { useProductStore, useLoadingStore } from "@/stores";
 import { nutritionColumns, nutritionMapping } from "@/constants";
@@ -49,23 +49,42 @@ const ProductDetailPage: React.FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
     if (!product) return;
 
-    await updateProduct({
-      id: product.id,
-      name: product.name,
-      price: Number(product.price),
-      pricePer100g: Number(product.pricePer100g),
-      productUrl: product.productUrl,
-      affiliateUrl: product.affiliateUrl,
-      imageUrl: product.imageUrl,
-      siteId: product.siteId,
-      productTypeId: product.productTypeId,
-    });
+    const updatePromises = [
+      updateProduct({
+        id: product.id,
+        name: product.name,
+        price: Number(product.price),
+        pricePer100g: Number(product.pricePer100g),
+        productUrl: product.productUrl,
+        affiliateUrl: product.affiliateUrl,
+        imageUrl: product.imageUrl,
+        siteId: product.siteId,
+        productTypeId: product.productTypeId,
+      }),
+      product.nutritionTotalId &&
+        updateNutritionTotal({
+          id: product.nutritionTotalId,
+          ...product.nutritionTotal,
+        }),
+      product.nutrition100gId &&
+        updateNutrition100g({
+          id: product.nutrition100gId,
+          ...product.nutrition100g,
+        }),
+    ].filter(Boolean);
+
+    try {
+      await Promise.all(updatePromises);
+    } catch (error) {
+      console.error("Error updating products:", error);
+    }
   };
 
   // nutritionTotal 업데이트 함수
-  const updateNutritionTotal = (key: string, value: string) => {
+  const updateNutritionTotalColumn = (key: string, value: string) => {
     if (product) {
       const updatedNutritionTotal = {
         ...product.nutritionTotal,
@@ -76,7 +95,7 @@ const ProductDetailPage: React.FC = () => {
   };
 
   // nutrition100g 업데이트 함수
-  const updateNutrition100g = (key: string, value: string) => {
+  const updateNutrition100gColumn = (key: string, value: string) => {
     if (product) {
       const updatedNutrition100g = {
         ...product.nutrition100g,
@@ -231,7 +250,7 @@ const ProductDetailPage: React.FC = () => {
                             <input
                               type="number"
                               value={product.nutrition100g[nutritionMapping[col] as keyof typeof product.nutrition100g] || ""}
-                              onChange={(e) => updateNutrition100g(nutritionMapping[col], e.target.value)}
+                              onChange={(e) => updateNutrition100gColumn(nutritionMapping[col], e.target.value)}
                               className="input input-bordered"
                             />
                           </div>
@@ -255,7 +274,7 @@ const ProductDetailPage: React.FC = () => {
                             <input
                               id={`total_${col}`}
                               value={product.nutritionTotal[nutritionMapping[col] as keyof typeof product.nutritionTotal] || ""}
-                              onChange={(e) => updateNutritionTotal(nutritionMapping[col], e.target.value)}
+                              onChange={(e) => updateNutritionTotalColumn(nutritionMapping[col], e.target.value)}
                               type="number"
                               min="0"
                               className="input input-bordered"
