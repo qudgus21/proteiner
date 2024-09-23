@@ -29,6 +29,10 @@ export async function GET(request: Request) {
     try {
       const product = await prisma.product.findUnique({
         where: { id },
+        include: {
+          nutritionTotal: true, // 전체 영양성분 정보 포함
+          nutrition100g: true, // 100g당 영양성분 정보 포함
+        },
       });
       if (!product) {
         return NextResponse.json({ error: "Product not found" }, { status: 404 });
@@ -149,6 +153,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const parsedBody: any = ProductCreateSchema.parse(body);
 
+    // todo: 여기서 생성하면 안됨
     // 100g 영양정보를 생성
     const nutrition100g = await prisma.productNutrition100g.create({
       data: {
@@ -197,9 +202,13 @@ export async function PATCH(request: Request) {
     const body = await request.json();
     const parsedBody = ProductUpdateSchema.parse(body);
 
+    const { id, ...data } = parsedBody;
+
+    console.log(data);
+
     const updatedProduct = await prisma.product.update({
-      where: { id: parsedBody.id },
-      data: parsedBody,
+      where: { id },
+      data,
     });
 
     return NextResponse.json(updatedProduct);

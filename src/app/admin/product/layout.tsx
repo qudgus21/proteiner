@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect } from "react";
+import Link from "next/link";
 import { useLoadingStore, useProductStore } from "@/stores";
 import { LoadingSpinner } from "@/components";
 
@@ -24,9 +25,9 @@ const ProductLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
 
   return (
     <section className="flex h-[100vh]">
-      <div className="flex-1 p-6 h-[100vh] overflow-y-scroll">
+      <div className="flex-1 p-6 h-[100vh] overflow-y-scroll relative">
         {loading && (
-          <div className="absolute inset-0 flex justify-center items-center z-50">
+          <div className="flex justify-center items-center w-full h-full">
             <LoadingSpinner />
           </div>
         )}

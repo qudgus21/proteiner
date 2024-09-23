@@ -33,8 +33,6 @@ export const ProductUpdateSchema = z
     imageUrl: z.string().optional(),
     productTypeId: idSchema.optional(),
     siteId: idSchema.optional(),
-    nutrition100gId: idSchema.optional(),
-    nutritionTotalId: idSchema.optional(),
   })
   .strict();
 
@@ -54,5 +52,23 @@ export const ProductSchema = z
     nutritionTotalId: idSchema.optional(),
     createdAt: z.date(),
     updatedAt: z.date(),
+  })
+  .strict();
+
+export const ProductIncludeNutritionSchema = z
+  .object({
+    id: idSchema,
+    name: z.string().min(1, "Name is required").optional(),
+    price: z.number().int().positive("Price must be a positive integer").optional(),
+    pricePer100g: z.number().int().positive().optional(),
+    productUrl: z.string().optional(),
+    affiliateUrl: z.string().optional(),
+    imageUrl: z.string().optional(),
+    productTypeId: idSchema.optional(),
+    siteId: idSchema.optional(),
+    nutrition100gId: idSchema.optional(),
+    nutritionTotalId: idSchema.optional(),
+    nutrition100g: ProductNutrition100gCreateSchema,
+    nutritionTotal: ProductNutritionTotalCreateSchema,
   })
   .strict();

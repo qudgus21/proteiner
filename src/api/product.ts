@@ -1,8 +1,8 @@
-import { Product, ProductCreate } from "@/types";
+import { Product, ProductCreate, ProductIncludeNutrition, ProductUpdate } from "@/types";
 
 import axios from "axios";
 
-export const getProduct = async (id: string): Promise<Product> => {
+export const getProduct = async (id: string): Promise<ProductIncludeNutrition> => {
   try {
     const response = await axios.get("/api/products", { params: { id } });
     return response.data;
@@ -29,5 +29,15 @@ export const createProduct = async (productData: ProductCreate): Promise<Product
   } catch (error) {
     console.error("Error creating product:", error);
     throw new Error("상품을 생성하는 중 오류가 발생했습니다.");
+  }
+};
+
+export const updateProduct = async (params: ProductUpdate): Promise<Product> => {
+  try {
+    const response = await axios.patch("/api/products", params);
+    return response.data;
+  } catch (error) {
+    console.error("Error updating nutrition 100g:", error);
+    throw new Error("상품을 업데이트 중 오류가 발생했습니다.");
   }
 };

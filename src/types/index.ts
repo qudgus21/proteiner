@@ -1,4 +1,4 @@
-import { Product, ProductCreate } from "./product";
+import { Product, ProductCreate, ProductIncludeNutrition, ProductUpdate } from "./product";
 import { ProductSite } from "./productSite";
 import { ProductType, ProductTypeWithChildren, ProductTypeWithOptionalChildren } from "./productType";
 import { ProductNutrition100g } from "./ProductNutrition100g";
@@ -13,4 +13,6 @@ export type {
   ProductTypeWithOptionalChildren,
   ProductNutrition100g,
   ProductNutritionTotal,
+  ProductIncludeNutrition,
+  ProductUpdate,
 };
