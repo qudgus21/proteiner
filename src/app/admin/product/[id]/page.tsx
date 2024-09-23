@@ -78,6 +78,9 @@ const ProductDetailPage: React.FC = () => {
 
     try {
       await Promise.all(updatePromises);
+      alert("수정 완료");
+      //todo: router
+      window.location.reload();
     } catch (error) {
       alert(error);
     }
