@@ -20,30 +20,17 @@ const useProductStore = create<ProductStoreState>((set, get) => ({
   productTypes: [],
   childProductTypes: [],
   fetchProducts: async (params?: URLSearchParams) => {
-    try {
-      const products = await getProducts(params);
-      set({ products });
-    } catch (error) {
-      console.error("Error fetching products:", error);
-    }
+    const products = await getProducts(params);
+    set({ products });
   },
   fetchProductSites: async () => {
-    try {
-      const productSites = await getProductSites();
-      set({ productSites });
-    } catch (error) {
-      console.error("Error fetching product sites:", error);
-    }
+    const productSites = await getProductSites();
+    set({ productSites });
   },
   fetchProductTypes: async () => {
-    try {
-      const productTypes = await getProductTypes();
-      set({ productTypes });
-
-      get().setChildProductTypes(productTypes);
-    } catch (error) {
-      console.error("Error fetching product types:", error);
-    }
+    const productTypes = await getProductTypes();
+    set({ productTypes });
+    get().setChildProductTypes(productTypes);
   },
   setChildProductTypes: (productTypes: ProductTypeWithChildren[]) => {
     const filtered: ProductTypeWithOptionalChildren[] = [];
@@ -60,11 +47,7 @@ const useProductStore = create<ProductStoreState>((set, get) => ({
     set({ childProductTypes: filtered });
   },
   initialize: async () => {
-    try {
-      await Promise.all([get().fetchProductSites(), get().fetchProductTypes()]);
-    } catch (error) {
-      console.error("Error during initialization:", error);
-    }
+    await Promise.all([get().fetchProductSites(), get().fetchProductTypes()]);
   },
 }));
 

@@ -15,7 +15,7 @@ const ProductLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
       try {
         await initialize();
       } catch (error) {
-        console.error("Error during initialization:", error);
+        alert(error);
       } finally {
         setLoading(false);
       }

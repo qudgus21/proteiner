@@ -36,26 +36,28 @@ const List = () => {
           </thead>
           <tbody>
             {paginatedProducts.map((product) => (
-              <tr key={product.id}>
+              <tr
+                key={product.id}
+                className="cursor-pointer hover:bg-gray-200"
+                onClick={() => (window.location.href = `/admin/product/${product.id}`)}
+              >
                 <td className="w-1/3">
-                  <div className="max-w-[300px] truncate">
-                    <Link href={`/admin/product/${product.id}`}>{product.name}</Link>
-                  </div>
+                  <div className="max-w-[300px] truncate">{product.name}</div>
                 </td>
                 <td className="w-1/6">{product.price}</td>
                 <td className="w-1/6">{product.pricePer100g}</td>
                 <td className="w-1/6">
-                  <a href={product.productUrl} target="_blank" rel="noopener noreferrer">
+                  <a href={product.productUrl} target="_blank">
                     <div className="max-w-[150px] truncate">{product.productUrl}</div>
                   </a>
                 </td>
                 <td className="w-1/6">
-                  <a href={product.affiliateUrl} target="_blank" rel="noopener noreferrer">
+                  <a href={product.affiliateUrl} target="_blank">
                     <div className="max-w-[150px] truncate">{product.affiliateUrl}</div>
                   </a>
                 </td>
                 <td className="w-1/6">
-                  <a href={product.imageUrl} target="_blank" rel="noopener noreferrer">
+                  <a href={product.imageUrl} target="_blank">
                     <div className="max-w-[150px] truncate">{product.imageUrl}</div>
                   </a>
                 </td>

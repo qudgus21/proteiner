@@ -67,7 +67,7 @@ const ProductAddPage: React.FC = () => {
       window.location.href = `/admin/product/${createdProduct.id}`;
       // router.push(`/admin/products/${createdProduct.id}`);
     } catch (error) {
-      console.error("Error submitting product:", error);
+      alert(error);
     } finally {
       setLoading(false);
     }

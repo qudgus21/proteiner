@@ -184,7 +184,7 @@ const Filters = () => {
     try {
       await fetchProducts(params);
     } catch (error) {
-      console.error("Error loading product data:", error);
+      alert(error);
     } finally {
       setLoading(false);
     }

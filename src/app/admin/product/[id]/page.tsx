@@ -27,7 +27,7 @@ const ProductDetailPage: React.FC = () => {
       const fetchedProduct = await getProduct(id);
       setProduct(fetchedProduct);
     } catch (error) {
-      console.error("Error fetching product:", error);
+      alert(error);
     } finally {
       setLoading(false);
     }
@@ -79,7 +79,7 @@ const ProductDetailPage: React.FC = () => {
     try {
       await Promise.all(updatePromises);
     } catch (error) {
-      console.error("Error updating products:", error);
+      alert(error);
     }
   };
 

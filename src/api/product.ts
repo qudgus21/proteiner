@@ -8,7 +8,7 @@ export const getProduct = async (id: string): Promise<ProductIncludeNutrition> =
     return response.data;
   } catch (error) {
     console.error("Error fetching product:", error);
-    throw new Error("데이터를 가져오는 중 오류가 발생했습니다.");
+    throw new Error("상품을 가져오는 중 오류가 발생했습니다.");
   }
 };
 
@@ -18,7 +18,7 @@ export const getProducts = async (params?: URLSearchParams): Promise<Product[]> 
     return response.data;
   } catch (error) {
     console.error("Error fetching products:", error);
-    throw new Error("데이터를 가져오는 중 오류가 발생했습니다.");
+    throw new Error("상품 리스트를 가져오는 중 오류가 발생했습니다.");
   }
 };
 
