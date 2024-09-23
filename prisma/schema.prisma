@@ -19,9 +19,9 @@ model Product {
   productTypeId     String                  // UUID 타입으로 변경
   site              ProductSite             @relation("ProductSiteProducts", fields: [siteId], references: [id])
   siteId            String                  // UUID 타입으로 변경
-  nutrition100g     ProductNutrition100g?   @relation("ProductToNutrition100g", fields: [nutrition100gId], references: [id])
+  nutrition100g     ProductNutrition100g?   @relation("ProductToNutrition100g", fields: [nutrition100gId], references: [id], onDelete: Cascade)
   nutrition100gId   String?                 @unique
-  nutritionTotal    ProductNutritionTotal?  @relation("ProductToNutritionTotal", fields: [nutritionTotalId], references: [id])
+  nutritionTotal    ProductNutritionTotal?  @relation("ProductToNutritionTotal", fields: [nutritionTotalId], references: [id], onDelete: Cascade)
   nutritionTotalId  String?                 @unique
   createdAt         DateTime                @default(now())
   updatedAt         DateTime                @updatedAt
