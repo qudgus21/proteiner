@@ -4,12 +4,14 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { getProduct, updateNutrition100g, updateNutritionTotal, updateProduct, deleteProduct } from "@/api";
 import { ProductIncludeNutrition } from "@/types";
-import { useProductStore, useLoadingStore } from "@/stores";
+import { useProductStore, useLoadingStore, useModalStore } from "@/stores";
 import { nutritionColumns, nutritionMapping } from "@/constants";
 
 const ProductDetailPage: React.FC = () => {
   const { id } = useParams();
   const { productSites, childProductTypes } = useProductStore();
+  const { openModal } = useModalStore();
+
   const { setLoading } = useLoadingStore();
 
   const [product, setProduct] = useState<ProductIncludeNutrition | null>(null);
@@ -78,9 +80,11 @@ const ProductDetailPage: React.FC = () => {
 
     try {
       await Promise.all(updatePromises);
-      alert("수정 완료");
+      openModal("알림", <p>상품 업데이트 완료</p>, () => {
+        window.location.reload();
+      });
       //todo: router
-      window.location.reload();
+      // window.location.reload();
     } catch (error) {
       alert(error);
     }
@@ -118,8 +122,9 @@ const ProductDetailPage: React.FC = () => {
     try {
       await deleteProduct(product.id);
       //todo: router로 변경
-      alert("삭제 성공");
-      window.location.href = `/admin/product/list`;
+      openModal("알림", <p>상품 삭제 완료</p>, () => {
+        window.location.href = `/admin/product/list`;
+      });
     } catch (error) {
       alert("상품 삭제에 실패했습니다.");
     }

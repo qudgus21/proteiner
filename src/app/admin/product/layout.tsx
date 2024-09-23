@@ -1,9 +1,8 @@
 "use client";
 
 import React, { useEffect } from "react";
-import Link from "next/link";
 import { useLoadingStore, useProductStore } from "@/stores";
-import { LoadingSpinner } from "@/components";
+import { LoadingSpinner, Modal } from "@/components";
 
 const ProductLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { loading, setLoading } = useLoadingStore();
@@ -32,6 +31,7 @@ const ProductLayout: React.FC<{ children: React.ReactNode }> = ({ children }) =>
           </div>
         )}
         {children}
+        <Modal />
       </div>
     </section>
   );
