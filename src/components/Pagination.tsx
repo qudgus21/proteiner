@@ -10,6 +10,7 @@ interface PaginationProps {
 }
 
 const Pagination: React.FC<PaginationProps> = ({ totalItems, itemsPerPage, currentPage, onPageChange }) => {
+  //todo: 페이지네이션 백엔드에서 처리해야함
   const totalPages = Math.ceil(totalItems / itemsPerPage);
   const visiblePages = 5; // 보여줄 페이지 수
 

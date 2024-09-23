@@ -166,6 +166,7 @@ const ProductDetailPage: React.FC = () => {
                   </label>
                   <input
                     type="number"
+                    min="0"
                     value={product.price}
                     onChange={(e) => handleInputChange("price", e.target.value)}
                     className="input input-bordered w-full"
@@ -173,19 +174,18 @@ const ProductDetailPage: React.FC = () => {
                 </div>
 
                 {/* 100g당 가격 */}
-                {product.pricePer100g && (
-                  <div className="mb-4">
-                    <label className="label">
-                      <span className="label-text">100g당 가격</span>
-                    </label>
-                    <input
-                      type="number"
-                      value={product.pricePer100g}
-                      onChange={(e) => handleInputChange("pricePer100g", e.target.value)}
-                      className="input input-bordered w-full"
-                    />
-                  </div>
-                )}
+                <div className="mb-4">
+                  <label className="label">
+                    <span className="label-text">100g당 가격</span>
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={product.pricePer100g}
+                    onChange={(e) => handleInputChange("pricePer100g", e.target.value)}
+                    className="input input-bordered w-full"
+                  />
+                </div>
 
                 {/* 상품 URL */}
                 <div className="mb-4">
