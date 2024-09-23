@@ -41,3 +41,12 @@ export const updateProduct = async (params: ProductUpdate): Promise<Product> => 
     throw new Error("상품을 업데이트 중 오류가 발생했습니다.");
   }
 };
+
+export const deleteProduct = async (id: string): Promise<void> => {
+  try {
+    await axios.delete("/api/products", { params: { id } });
+  } catch (error) {
+    console.error("Error deleting product:", error);
+    throw new Error("상품 삭제 중 오류가 발생했습니다.");
+  }
+};

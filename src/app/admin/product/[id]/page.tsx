@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { getProduct, updateNutrition100g, updateNutritionTotal, updateProduct } from "@/api";
+import { getProduct, updateNutrition100g, updateNutritionTotal, updateProduct, deleteProduct } from "@/api";
 import { ProductIncludeNutrition } from "@/types";
 import { useProductStore, useLoadingStore } from "@/stores";
 import { nutritionColumns, nutritionMapping } from "@/constants";
@@ -102,6 +102,23 @@ const ProductDetailPage: React.FC = () => {
         [key]: Number(value) || 0,
       };
       setProduct({ ...product, nutrition100g: updatedNutrition100g });
+    }
+  };
+
+  const handleRemoveBtnClick = async (e: any) => {
+    e.preventDefault();
+    if (!product) return;
+
+    const confirmed = window.confirm("삭제하시겠습니까?");
+    if (!confirmed) return;
+
+    try {
+      await deleteProduct(product.id);
+      //todo: router로 변경
+      alert("삭제 성공");
+      window.location.href = `/admin/product/list`;
+    } catch (error) {
+      alert("상품 삭제에 실패했습니다.");
     }
   };
 
@@ -288,6 +305,11 @@ const ProductDetailPage: React.FC = () => {
                 <div className="w-full">
                   <button type="submit" className="btn btn-primary mt-4 w-full">
                     업데이트
+                  </button>
+                </div>
+                <div className="w-full">
+                  <button onClick={handleRemoveBtnClick} className="btn btn-error mt-4 w-full text-white">
+                    삭제
                   </button>
                 </div>
               </form>
