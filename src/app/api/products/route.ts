@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 import createHttpError from "http-errors";
 import { Prisma } from "@prisma/client";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/libs";
 import { handleError } from "@/utils/errorHandler";
 import { idSchema, ProductCreateSchema, ProductUpdateSchema } from "@/schemas/product";
 import { nutritionColumns, nutritionMapping } from "@/constants";

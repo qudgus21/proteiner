@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 import createHttpError from "http-errors";
-import prisma from "@/lib/prisma";
+import { prisma } from "@/libs";
 import { handleError } from "@/utils/errorHandler";
 import { idSchema, ProductTypeCreateSchema, ProductTypeUpdateSchema, ProductTypeWithOptionalChildrenSchema } from "@/schemas/productType";
 

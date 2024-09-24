@@ -3,6 +3,7 @@ import { ProductSite } from "./productSite";
 import { ProductType, ProductTypeWithChildren, ProductTypeWithOptionalChildren } from "./productType";
 import { ProductNutrition100g } from "./ProductNutrition100g";
 import { ProductNutritionTotal } from "./ProductNutritionTotal";
+import { UserOnlyRequired, User } from "./user";
 
 export type {
   Product,
@@ -15,4 +16,6 @@ export type {
   ProductNutritionTotal,
   ProductIncludeNutrition,
   ProductUpdate,
+  UserOnlyRequired,
+  User,
 };

@@ -3,6 +3,7 @@ import { getProductSites } from "./productSite";
 import { getProductTypes } from "./productType";
 import { createNutritionTotal, updateNutritionTotal } from "./productNutritionTotal";
 import { createNutrition100g, updateNutrition100g } from "./productNutrition100g";
+import { signin } from "./user";
 
 export {
   getProduct,
@@ -16,4 +17,5 @@ export {
   updateNutrition100g,
   updateProduct,
   deleteProduct,
+  signin
 };
