@@ -78,3 +78,17 @@ model ProductSite {
   name       String     @unique
   products   Product[]  @relation("ProductSiteProducts")
 }
+
+
+model User {
+  id          String   @id @default(uuid())
+  firebaseUid String?  @unique // null이 여러 번 저장될 수 있음, 하지만 null이 아닌 값은 유일해야 함
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum Role {
+  USER  // 일반 유저
+  ADMIN // 어드민 유저
+}
