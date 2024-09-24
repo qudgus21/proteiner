@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { prisma, firebaseAdmin } from "@/libs";
+import { prisma, admin } from "@/libs";
 import { UserOnlyRequiredSchema } from "@/schemas/user";
 import { handleError } from "@/utils/errorHandler";
 
@@ -8,7 +8,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { email, password } = UserOnlyRequiredSchema.parse(body);
 
-    const userRecord = await firebaseAdmin.auth().createUser({
+    const userRecord = await admin.auth().createUser({
       email,
       password,
     });
